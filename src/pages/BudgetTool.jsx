@@ -48,6 +48,55 @@ function BudgetTool() {
     });
   };
 
+    // 1) Print
+    const handlePrint = () => {
+      window.print();
+    };
+  
+    // 2) Download PDF
+    const handleDownloadPDF = () => {
+      const doc = new jsPDF();
+      doc.text('WES3 Budget Estimate', 10, 10);
+      doc.text(`Smoke Detectors: ${data.smokeDetectors || 0}`, 10, 20);
+      doc.text(`Heat Detectors: ${data.heatDetectors || 0}`, 10, 30);
+      doc.text(`Call Points: ${data.callPoints || 0}`, 10, 40);
+      doc.text(`Total Devices: ${data.totalDevices || 0}`, 10, 50);
+  
+      if (data.reactIntegration) {
+        doc.text(
+          `REACT Subscription: $${data.reactAnnualCost || 0}/year`,
+          10,
+          60
+        );
+      }
+      doc.save('WES3-Budget-Estimate.pdf');
+    };
+  
+    // 3) Email (uses mailto: so it opens the user's email client)
+    const handleEmail = () => {
+      const subject = encodeURIComponent('WES3 Budget Estimate');
+      // Build a multiline body
+      const body = encodeURIComponent(`
+        Here's my WES3 budget estimate:
+  
+        Smoke Detectors: ${data.smokeDetectors || 0}
+        Heat Detectors: ${data.heatDetectors || 0}
+        Call Points:    ${data.callPoints || 0}
+        Total Devices:  ${data.totalDevices || 0}
+  
+        REACT Subscription: ${data.reactIntegration ? '$' + (data.reactAnnualCost || 0) + '/year' : 'Not selected'}
+  
+        Let me know next steps!
+      `);
+  
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    };
+  
+    // 4) Request Quote (either navigate or show a local mini-form)
+    const handleRequestQuoteClick = () => {
+      // Option A: Show a local form below the results
+      setShowQuoteForm(true);
+
   return (
     <div className="budget-tool-hero">
       <div className="budget-overlay"></div>
@@ -74,6 +123,42 @@ function BudgetTool() {
             {data.reactIntegration && (
               <p>REACT Subscription: <strong>${data.reactAnnualCost}/year</strong></p>
             )}
+
+            {/* CTA Buttons */}
+            <div className="cta-buttons">
+              <button onClick={handlePrint}>Print</button>
+              <button onClick={handleDownloadPDF}>Download PDF</button>
+              <button onClick={handleEmail}>Email My Estimate</button>
+              <button onClick={handleRequestQuoteClick}>Request a Quote</button>
+            </div>
+
+            {/* Optional inline "Request Quote" form */}
+            {showQuoteForm && (
+              <form onSubmit={handleQuoteFormSubmit} className="quote-form">
+                <h3>Request a Formal Quote</h3>
+                <label>
+                  Name:
+                  <input name="name" type="text" required />
+                </label>
+                <label>
+                  Email:
+                  <input name="email" type="email" required />
+                </label>
+                <label>
+                  Additional Notes:
+                  <textarea name="message" rows="3" />
+                </label>
+                <button type="submit">Submit Request</button>
+              </form>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default BudgetTool;
 
  {/* Render the chart below the summary */}
  <Chart data={data} />
