@@ -41,28 +41,28 @@ function Chart({ data }) {
   const chartOptions = {
     responsive: true,
     plugins: {
-      legend: { display: false },  // If you want to hide "Device Count" legend
+      legend: { display: true },  // If you want to hide "Device Count" legend
       title: {
         display: true,
         text: 'Device Quantities',
       },
     },
     // Optional: customize scales, tooltips, etc.
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Quantity',
-        },
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Device Type',
-        },
-      },
-    },
+   // scales: {
+   //   y: {
+   //     beginAtZero: true,
+   //     title: {
+   //       display: true,
+   //       text: 'Quantity',
+   //     },
+   //   },
+   //   x: {
+   //     title: {
+   //       display: true,
+   //       text: 'Device Type',
+   //     },
+  // },
+  //  },
   };
 
   return <Doughnut data={chartData} options={chartOptions} />;
