@@ -2,25 +2,27 @@
 import React from 'react';
 
 function FormStep({ onUpdate }) {
-  // 1) Define handleSubmit
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+
     const newData = {
       siteType: formData.get('siteType'),
       siteSize: formData.get('siteSize'),
       projectPhase: formData.get('projectPhase'),
-      floors: formData.get('floors'), // new field
-      stairs: formData.get('stairs'), // new field
+      floors: formData.get('floors'),
+      stairs: formData.get('stairs'),
+      interfaceIntegration: formData.get('interfaceIntegration') === 'on',
+      reactIntegration: formData.get('reactIntegration') === 'on',
     };
-    // 2) Send data up to parent
+
     onUpdate && onUpdate(newData);
   };
 
   return (
     <form onSubmit={handleSubmit} className="wes3-form">
       <label>
-        Site Type: 
+        Site Type:
         <select name="siteType" defaultValue="Commercial">
           <option value="Residential">Residential</option>
           <option value="Commercial">Commercial</option>
@@ -42,7 +44,6 @@ function FormStep({ onUpdate }) {
         </select>
       </label>
 
-      {/* New fields for floors/stairs */}
       <label>
         Number of Floors:
         <input type="number" name="floors" defaultValue={1} />
@@ -53,7 +54,17 @@ function FormStep({ onUpdate }) {
         <input type="number" name="stairs" defaultValue={1} />
       </label>
 
-      <button type="submit">Next</button>
+      <label>
+        <input type="checkbox" name="interfaceIntegration" />
+        Interface Unit (Allows integration with external systems)
+      </label>
+
+      <label>
+        <input type="checkbox" name="reactIntegration" />
+        REACT (Enables remote notifications and alerts)
+      </label>
+
+      <button type="submit">Submit</button>
     </form>
   );
 }

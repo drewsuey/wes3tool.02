@@ -53,3 +53,13 @@ body {
 .wes3-form button:hover {
   background-color: #ff8800; /* slightly darker orange */
 }
+
+.estimate-result {
+  margin-top: 2rem;
+  color: #333;
+  text-align: center;
+}
+.estimate-result h2 {
+  color: #FFA500;
+  margin-bottom: 1rem;
+}
