@@ -8,6 +8,11 @@
   font-family: sans-serif;
 }
 
+/* Make headings orange */
+h1, h2, h3 {
+  color: #FFA500; /* Orange color */
+}
+
 /* Center the page content using flexbox */
 body {
   display: flex;
