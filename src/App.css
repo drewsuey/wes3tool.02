@@ -80,34 +80,69 @@ body {
 
 
 
-/* Orange/white theme */
-.wes3-form {
-  background-color: #fff8f0; /* a very light orange-ish */
-  border: 2px solid #ffa500; /* orange border */
+/* 1) The outer container with the background image */
+.budget-tool-hero {
+  position: relative;
+  min-height: 100vh;
+  /* Replace this with your WES3 device image path */
+  background: url('/logo.jpg') no-repeat center center;
+  background-size: cover;
+  /* Use flex to center content if desired */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 2) The full overlay across the entire container */
+.budget-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /* A semi‐transparent black overlay (adjust alpha as needed) */
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1; /* behind your content but above the background */
+}
+
+/* 3) The content area that sits on top of the overlay */
+.budget-content {
+  position: relative;
+  z-index: 2;
+  /* optional: add a background to the form if you want it lighter */
+  background-color: rgba(255, 248, 240, 0.9); 
   padding: 2rem;
   border-radius: 8px;
-  max-width: 600px;
+  max-width: 500px;
   width: 90%;
+  text-align: center;
 }
 
-/* Label styling */
+/* Title text styling */
+.budget-title {
+  color: #fff; /* White or orange to contrast with overlay */
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+/* Example form styling */
 .wes3-form label {
   display: block;
+  text-align: left;
   margin-bottom: 1rem;
-  font-weight: bold;
-  color: #333;
+  color: #333; 
 }
-
-/* Buttons */
 .wes3-form button {
-  background-color: #ffa500; /* orange */
-  color: white;
+  background-color: #FFA500;
+  color: #fff;
   border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.25rem;
   cursor: pointer;
   border-radius: 4px;
+  margin-top: 1rem;
 }
+
 
 .wes3-form button:hover {
   background-color: #ff8800; /* slightly darker orange */
