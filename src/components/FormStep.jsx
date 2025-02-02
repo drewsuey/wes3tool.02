@@ -1,70 +1,71 @@
 // src/components/FormStep.jsx
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
 
 function FormStep({ onUpdate }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
     const newData = {
-      siteType: formData.get('siteType'),
       siteSize: formData.get('siteSize'),
-      projectPhase: formData.get('projectPhase'),
       floors: formData.get('floors'),
       stairs: formData.get('stairs'),
       interfaceIntegration: formData.get('interfaceIntegration') === 'on',
       reactIntegration: formData.get('reactIntegration') === 'on',
     };
-
-    onUpdate && onUpdate(newData);
+    onUpdate(newData);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="wes3-form">
-      <label>
-        Site Type:
-        <select name="siteType" defaultValue="Commercial">
-          <option value="Residential">Residential</option>
-          <option value="Commercial">Commercial</option>
-          <option value="Industrial">Industrial</option>
-        </select>
-      </label>
-
+    <form onSubmit={handleSubmit}>
       <label>
         Site Size (sq. ft):
-        <input type="number" name="siteSize" defaultValue={50000} />
+        <input
+          type="number"
+          name="siteSize"
+          required
+          data-tip="Enter the total area of the site in square feet."
+        />
       </label>
-
-      <label>
-        Project Phase:
-        <select name="projectPhase" defaultValue="Early Planning">
-          <option value="Early Planning">Early Planning</option>
-          <option value="Mid-Construction">Mid-Construction</option>
-          <option value="Finishing Phase">Finishing Phase</option>
-        </select>
-      </label>
+      <ReactTooltip />
 
       <label>
         Number of Floors:
-        <input type="number" name="floors" defaultValue={1} />
+        <input
+          type="number"
+          name="floors"
+          required
+          data-tip="Include all levels, including basements, that require coverage."
+        />
       </label>
+      <ReactTooltip />
 
       <label>
         Number of Staircases:
-        <input type="number" name="stairs" defaultValue={1} />
+        <input
+          type="number"
+          name="stairs"
+          required
+          data-tip="Enter the total number of staircases across all floors."
+        />
       </label>
+      <ReactTooltip />
 
       <label>
+        Interface Integration:
         <input type="checkbox" name="interfaceIntegration" />
-        Interface Unit (Allows integration with external systems)
+        <span data-tip="Check this box if you need the system to integrate with other fire panels or alarms.">?</span>
       </label>
+      <ReactTooltip />
 
       <label>
+        REACT Integration:
         <input type="checkbox" name="reactIntegration" />
-        REACT (Enables remote notifications and alerts)
+        <span data-tip="Enable REACT integration for remote monitoring and notifications.">?</span>
       </label>
+      <ReactTooltip />
 
-      <button type="submit">Submit</button>
+      <button type="submit">Next</button>
     </form>
   );
 }
