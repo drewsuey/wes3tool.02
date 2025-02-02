@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import FormStep from '../components/FormStep';
 // import Chart from '../components/Chart';
 // import PDFExporter from '../components/PDFExporter';
+import '../App.css';
 
 function BudgetTool() {
   const [data, setData] = useState({});
@@ -43,7 +44,9 @@ function BudgetTool() {
 
   return (
     <div className="budget-tool-container">
-      <h1 className="wes3-title">WES3 Budget Tool</h1>
+      <div className="budget-overlay"></div>
+      <div className="budget-content">
+      <h1 className="budget-title">WES3 Budget Tool</h1>
 
       {/* The form that collects site info, floors, stairs, etc. */}
       <FormStep onUpdate={handleDataUpdate} />
@@ -62,6 +65,7 @@ function BudgetTool() {
       {/* If you want to re-enable the chart or PDF exporter, just uncomment: */}
       {/* {data.totalDevices !== undefined && <Chart data={data} />} */}
       {/* {data.totalDevices !== undefined && <PDFExporter data={data} />} */}
+    </div>
     </div>
   );
 }
