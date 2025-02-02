@@ -8,12 +8,11 @@ import {
   ArcElement,
   Tooltip,
   Legend,
-} from 'chart.js';
+} 
+// Tell chart.js which components to use
+from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
-// Tell chart.js which components to use
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function Chart({ data }) {
   // Pull each device count from the parent data (or default to 0)
@@ -47,22 +46,7 @@ function Chart({ data }) {
         text: 'Device Quantities',
       },
     },
-    // Optional: customize scales, tooltips, etc.
-   // scales: {
-   //   y: {
-   //     beginAtZero: true,
-   //     title: {
-   //       display: true,
-   //       text: 'Quantity',
-   //     },
-   //   },
-   //   x: {
-   //     title: {
-   //       display: true,
-   //       text: 'Device Type',
-   //     },
-  // },
-  //  },
+  
   };
 
   return <Doughnut data={chartData} options={chartOptions} />;
