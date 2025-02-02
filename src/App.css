@@ -78,21 +78,6 @@ body {
   background-size: cover; /* or 'contain' if you want to see the entire logo */
 }
 
-
-
-/* 1) The outer container with the background image */
-.budget-tool-hero {
-  position: relative;
-  min-height: 100vh;
-  /* Replace this with your WES3 device image path */
-  background: url('/logo.jpg') no-repeat center center;
-  background-size: cover;
-  /* Use flex to center content if desired */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 /* 2) The full overlay across the entire container */
 .budget-overlay {
   position: absolute;
