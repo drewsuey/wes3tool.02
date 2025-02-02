@@ -8,11 +8,6 @@
   font-family: sans-serif;
 }
 
-/* Make headings orange */
-h1, h2, h3 {
-  color: #333; /* Orange color */
-}
-
 /* The overlay dims the background image for better text contrast */
 .hero-section .overlay {
   position: absolute;
