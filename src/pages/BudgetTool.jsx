@@ -43,10 +43,13 @@ function BudgetTool() {
   };
 
   return (
-    <div className="budget-tool-container">
+    <div className="budget-tool-hero">
+      {/* The overlay covers the entire background */}
       <div className="budget-overlay"></div>
+
+      {/* The content container sits on top of the overlay */}
       <div className="budget-content">
-      <h1 className="budget-title">WES3 Budget Tool</h1>
+        <h1 className="budget-title">WES3 Budget Tool</h1>
 
       {/* The form that collects site info, floors, stairs, etc. */}
       <FormStep onUpdate={handleDataUpdate} />
