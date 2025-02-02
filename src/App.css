@@ -1,42 +1,55 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
+/* App.css (for the entire app or global styling) */
+
+/* Basic reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+/* Center the page content using flexbox */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* so it takes the full viewport height */
+  background-color: white; /* fallback in case your logo doesn’t load */
+  /* if you want to set the background image here, see step 3 below */
+  /* Place your logo or background image here: */
+  background: url('C:\wes3-budget-tool\public\logo.jpg') no-repeat center center;
+  background-size: cover; /* or 'contain' if you want to see the entire logo */
+}
+
+/* Orange/white theme */
+.wes3-form {
+  background-color: #fff8f0; /* a very light orange-ish */
+  border: 2px solid #ffa500; /* orange border */
   padding: 2rem;
-  text-align: center;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Label styling */
+.wes3-form label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #333;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Buttons */
+.wes3-form button {
+  background-color: #ffa500; /* orange */
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.wes3-form button:hover {
+  background-color: #ff8800; /* slightly darker orange */
 }
