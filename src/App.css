@@ -195,3 +195,70 @@ body {
 .quote-form button[type="submit"]:hover {
   background-color: #ff8c00;
 }
+
+/* App.css */
+
+/* Form styling */
+.wes3-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Add spacing between form groups */
+  max-width: 400px; /* Limit form width */
+  margin: 0 auto; /* Center the form horizontally */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align labels and inputs to the left */
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333; /* Dark color for labels */
+}
+
+.form-group input[type="number"],
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%; /* Full width */
+  max-width: 300px; /* Optional: Limit input width */
+  padding: 0.5rem;
+  border: 1px solid #ccc; /* Light border */
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between checkbox and label */
+}
+
+button[type="submit"] {
+  align-self: flex-start; /* Align the button to the left */
+  padding: 0.75rem 1.25rem;
+  background-color: #ffa500; /* Orange */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #ff8c00; /* Darker orange on hover */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .wes3-form {
+    gap: 1rem; /* Reduce spacing between form groups */
+  }
+
+  .checkbox-group {
+    flex-direction: column; /* Stack checkboxes vertically */
+    align-items: flex-start;
+  }
+}
