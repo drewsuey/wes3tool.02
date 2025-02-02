@@ -1,17 +1,16 @@
 // src/components/Chart.jsx
 
 import React from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 // Import chart.js and register the necessary components:
 import {
   Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  ArcElement,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 
 // Tell chart.js which components to use
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -66,7 +65,7 @@ function Chart({ data }) {
     },
   };
 
-  return <Bar data={chartData} options={chartOptions} />;
+  return <Doughnut data={chartData} options={chartOptions} />;
 }
 
 export default Chart;
