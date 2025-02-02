@@ -15,9 +15,9 @@ body {
   align-items: center;
   min-height: 100vh; /* so it takes the full viewport height */
   background-color: white; /* fallback in case your logo doesn’t load */
-  /* if you want to set the background image here, see step 3 below */
+  
   /* Place your logo or background image here: */
-  background: url('C:\wes3-budget-tool\public\logo.jpg') no-repeat center center;
+  background: url('/logo.jpg') no-repeat center center;
   background-size: cover; /* or 'contain' if you want to see the entire logo */
 }
 

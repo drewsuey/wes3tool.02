@@ -14,8 +14,9 @@ function BudgetTool() {
     <div className="budget-tool-container">
       <h1>WES3 Budget Tool</h1>
       <FormStep onUpdate={handleDataUpdate} />
-      {data && <Chart data={data} />}
-      {data && <PDFExporter data={data} />}
+       {/* Temporarily disable the chart & PDF button: */}
+      {/* {data && <Chart data={data} />} */}
+      {/* {data && <PDFExporter data={data} />} */}
     </div>
   );
 }
