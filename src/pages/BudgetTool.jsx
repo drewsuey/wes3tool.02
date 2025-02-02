@@ -1,14 +1,17 @@
 // src/pages/BudgetTool.jsx
-
 import React, { useState } from 'react';
+import jsPDF from 'jspdf'; // IMPORTANT: import jsPDF for handleDownloadPDF
 import FormStep from '../components/FormStep';
 import Chart from '../components/Chart';
-// import PDFExporter from '../components/PDFExporter';
 import '../App.css';
 
 function BudgetTool() {
   const [data, setData] = useState({});
+  
+  // For "Request a Quote" form toggle
+  const [showQuoteForm, setShowQuoteForm] = useState(false);
 
+  // 1) Form data updates
   const handleDataUpdate = (newData) => {
     const sqFt = parseInt(newData.siteSize || 0, 10);
     const floors = parseInt(newData.floors || 0, 10);
@@ -25,18 +28,16 @@ function BudgetTool() {
     // If interfaceIntegration is checked, we add 1 device
     const interfaceUnitCount = newData.interfaceIntegration ? 1 : 0;
 
-    // If reactIntegration is checked, we won't add a device—
-    // but let's store an annual subscription cost or note:
-    const reactAnnualCost = newData.reactIntegration ? 2500 : 0; // example $500/year
+    // If reactIntegration is checked, store an annual cost (not a device)
+    const reactAnnualCost = newData.reactIntegration ? 2500 : 0; // e.g. $2500/year
 
-    // Total devices = Smoke + Heat + Call Points + Interface (IF checked)
-    const totalDevices = 
-      smokeDetectors + 
-      heatDetectors + 
-      callPoints + 
+    // Total devices = Smoke + Heat + Call Points + Interface
+    const totalDevices =
+      smokeDetectors +
+      heatDetectors +
+      callPoints +
       interfaceUnitCount;
 
-    // We'll store everything in state for display
     setData({
       ...newData,
       smokeDetectors,
@@ -44,58 +45,74 @@ function BudgetTool() {
       callPoints,
       interfaceUnitCount,
       totalDevices,
-      reactAnnualCost, // Store the subscription if they picked REACT
+      reactAnnualCost,
     });
   };
 
-    // 1) Print
-    const handlePrint = () => {
-      window.print();
-    };
-  
-    // 2) Download PDF
-    const handleDownloadPDF = () => {
-      const doc = new jsPDF();
-      doc.text('WES3 Budget Estimate', 10, 10);
-      doc.text(`Smoke Detectors: ${data.smokeDetectors || 0}`, 10, 20);
-      doc.text(`Heat Detectors: ${data.heatDetectors || 0}`, 10, 30);
-      doc.text(`Call Points: ${data.callPoints || 0}`, 10, 40);
-      doc.text(`Total Devices: ${data.totalDevices || 0}`, 10, 50);
-  
-      if (data.reactIntegration) {
-        doc.text(
-          `REACT Subscription: $${data.reactAnnualCost || 0}/year`,
-          10,
-          60
-        );
+  // 2) Print
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // 3) Download PDF
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text('WES3 Budget Estimate', 10, 10);
+    doc.text(`Smoke Detectors: ${data.smokeDetectors || 0}`, 10, 20);
+    doc.text(`Heat Detectors: ${data.heatDetectors || 0}`, 10, 30);
+    doc.text(`Call Points: ${data.callPoints || 0}`, 10, 40);
+    doc.text(`Total Devices: ${data.totalDevices || 0}`, 10, 50);
+
+    if (data.reactIntegration) {
+      doc.text(
+        `REACT Subscription: $${data.reactAnnualCost || 0}/year`,
+        10,
+        60
+      );
+    }
+    doc.save('WES3-Budget-Estimate.pdf');
+  };
+
+  // 4) Email
+  const handleEmail = () => {
+    const subject = encodeURIComponent('WES3 Budget Estimate');
+    const body = encodeURIComponent(`
+      Here's my WES3 budget estimate:
+      
+      Smoke Detectors: ${data.smokeDetectors || 0}
+      Heat Detectors:  ${data.heatDetectors || 0}
+      Call Points:     ${data.callPoints || 0}
+      Total Devices:   ${data.totalDevices || 0}
+
+      REACT Subscription: ${
+        data.reactIntegration
+          ? '$' + (data.reactAnnualCost || 0) + '/year'
+          : 'Not selected'
       }
-      doc.save('WES3-Budget-Estimate.pdf');
-    };
-  
-    // 3) Email (uses mailto: so it opens the user's email client)
-    const handleEmail = () => {
-      const subject = encodeURIComponent('WES3 Budget Estimate');
-      // Build a multiline body
-      const body = encodeURIComponent(`
-        Here's my WES3 budget estimate:
-  
-        Smoke Detectors: ${data.smokeDetectors || 0}
-        Heat Detectors: ${data.heatDetectors || 0}
-        Call Points:    ${data.callPoints || 0}
-        Total Devices:  ${data.totalDevices || 0}
-  
-        REACT Subscription: ${data.reactIntegration ? '$' + (data.reactAnnualCost || 0) + '/year' : 'Not selected'}
-  
-        Let me know next steps!
-      `);
-  
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    };
-  
-    // 4) Request Quote (either navigate or show a local mini-form)
-    const handleRequestQuoteClick = () => {
-      // Option A: Show a local form below the results
-      setShowQuoteForm(true);
+      
+      Let me know next steps!
+    `);
+
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  // 5) Request Quote button toggles a local mini-form
+  const handleRequestQuoteClick = () => {
+    setShowQuoteForm(true);
+  };
+
+  // 6) Handle form submission
+  const handleQuoteFormSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const message = formData.get('message') || '';
+
+    // Demo: Just alert. In real usage, you'd send to a server.
+    alert(`Quote requested by ${name} (${email}):\n\n${message}`);
+    setShowQuoteForm(false);
+  };
 
   return (
     <div className="budget-tool-hero">
@@ -108,20 +125,33 @@ function BudgetTool() {
         {data.totalDevices !== undefined && (
           <div className="estimate-result">
             <h2>Device Estimate</h2>
-            <p>Smoke Detectors Needed: <strong>{data.smokeDetectors}</strong></p>
-            <p>Heat Detectors Needed: <strong>{data.heatDetectors}</strong></p>
-            <p>Call Points Needed: <strong>{data.callPoints}</strong></p>
+            <p>
+              Smoke Detectors Needed: <strong>{data.smokeDetectors}</strong>
+            </p>
+            <p>
+              Heat Detectors Needed: <strong>{data.heatDetectors}</strong>
+            </p>
+            <p>
+              Call Points Needed: <strong>{data.callPoints}</strong>
+            </p>
 
             {/* If Interface is checked, show how many we added */}
             {data.interfaceIntegration && (
-              <p>Interface Unit: <strong>{data.interfaceUnitCount}</strong></p>
+              <p>
+                Interface Unit: <strong>{data.interfaceUnitCount}</strong>
+              </p>
             )}
 
-            <p>Total Devices: <strong>{data.totalDevices}</strong></p>
+            <p>
+              Total Devices: <strong>{data.totalDevices}</strong>
+            </p>
 
             {/* REACT is an annual subscription, not an additional device */}
             {data.reactIntegration && (
-              <p>REACT Subscription: <strong>${data.reactAnnualCost}/year</strong></p>
+              <p>
+                REACT Subscription:{' '}
+                <strong>${data.reactAnnualCost}/year</strong>
+              </p>
             )}
 
             {/* CTA Buttons */}
@@ -153,20 +183,16 @@ function BudgetTool() {
             )}
           </div>
         )}
+
+        {/* Render the chart below the summary (if you want it always shown, remove the condition) */}
+        {data.totalDevices !== undefined && (
+          <div className="chart-section">
+            <Chart data={data} />
+          </div>
+        )}
       </div>
     </div>
   );
-}
-
-export default BudgetTool;
-
- {/* Render the chart below the summary */}
- <Chart data={data} />
-        </div>
-      )}
-    </div>
-  </div>
-);
 }
 
 export default BudgetTool;
