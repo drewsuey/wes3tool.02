@@ -1,6 +1,6 @@
 // src/components/FormStep.jsx
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 
 function FormStep({ onUpdate }) {
   const handleSubmit = (e) => {
@@ -24,10 +24,11 @@ function FormStep({ onUpdate }) {
           type="number"
           name="siteSize"
           required
-          data-tip="Enter the total area of the site in square feet."
+          data-tooltip-id="tooltip-siteSize"
+          data-tooltip-content="Enter the total area of the site in square feet."
         />
+        <Tooltip id="tooltip-siteSize" />
       </label>
-      <ReactTooltip />
 
       <label>
         Number of Floors:
@@ -35,10 +36,11 @@ function FormStep({ onUpdate }) {
           type="number"
           name="floors"
           required
-          data-tip="Include all levels, including basements, that require coverage."
+          data-tooltip-id="tooltip-floors"
+          data-tooltip-content="Include all levels, including basements, that require coverage."
         />
+        <Tooltip id="tooltip-floors" />
       </label>
-      <ReactTooltip />
 
       <label>
         Number of Staircases:
@@ -46,24 +48,35 @@ function FormStep({ onUpdate }) {
           type="number"
           name="stairs"
           required
-          data-tip="Enter the total number of staircases across all floors."
+          data-tooltip-id="tooltip-stairs"
+          data-tooltip-content="Enter the total number of staircases across all floors."
         />
+        <Tooltip id="tooltip-stairs" />
       </label>
-      <ReactTooltip />
 
       <label>
         Interface Integration:
         <input type="checkbox" name="interfaceIntegration" />
-        <span data-tip="Check this box if you need the system to integrate with other fire panels or alarms.">?</span>
+        <span
+          data-tooltip-id="tooltip-interface"
+          data-tooltip-content="Check this box if you need the system to integrate with other fire panels or alarms."
+        >
+          ?
+        </span>
+        <Tooltip id="tooltip-interface" />
       </label>
-      <ReactTooltip />
 
       <label>
         REACT Integration:
         <input type="checkbox" name="reactIntegration" />
-        <span data-tip="Enable REACT integration for remote monitoring and notifications.">?</span>
+        <span
+          data-tooltip-id="tooltip-react"
+          data-tooltip-content="Enable REACT integration for remote monitoring and notifications."
+        >
+          ?
+        </span>
+        <Tooltip id="tooltip-react" />
       </label>
-      <ReactTooltip />
 
       <button type="submit">Next</button>
     </form>
@@ -71,3 +84,4 @@ function FormStep({ onUpdate }) {
 }
 
 export default FormStep;
+
