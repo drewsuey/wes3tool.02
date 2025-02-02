@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import FormStep from '../components/FormStep';
-// import Chart from '../components/Chart';
+import Chart from '../components/Chart';
 // import PDFExporter from '../components/PDFExporter';
 import '../App.css';
 
@@ -74,11 +74,14 @@ function BudgetTool() {
             {data.reactIntegration && (
               <p>REACT Subscription: <strong>${data.reactAnnualCost}/year</strong></p>
             )}
-          </div>
-        )}
-      </div>
+
+ {/* Render the chart below the summary */}
+ <Chart data={data} />
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 }
 
 export default BudgetTool;
