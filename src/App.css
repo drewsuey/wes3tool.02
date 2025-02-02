@@ -10,7 +10,7 @@
 
 /* Make headings orange */
 h1, h2, h3 {
-  color: #FFA500; /* Orange color */
+  color: #333; /* Orange color */
 }
 
 /* Center the page content using flexbox */
@@ -61,10 +61,10 @@ body {
 
 .estimate-result {
   margin-top: 2rem;
-  color: #FFA500;
+  color: #333;
   text-align: center;
 }
 .estimate-result h2 {
-  color: #FFA500;
+  color: #333;
   margin-bottom: 1rem;
 }
