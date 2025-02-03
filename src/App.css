@@ -127,9 +127,10 @@ body {
   color: #444;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  text-shadow: none; /* Prevents unwanted shadows on text */
   width: 100%;
   max-width: 350px;
   padding: 0.6rem;
@@ -137,12 +138,28 @@ body {
   border-radius: 5px;
   font-size: 1rem;
   background-color: white;
+  outline: 3px solid #F15A22; /* Orange focus outline */
+  color: #333;
 }
 
 .form-group select:focus {
   outline: none;
   border-color: #F15A22;
 }
+
+::placeholder {
+  color: #888; /* Light gray placeholder text */
+  opacity: 1; /* Ensures visibility */
+}
+
+:-ms-input-placeholder { /* For Internet Explorer */
+  color: #888;
+}
+
+::-ms-input-placeholder { /* For Edge */
+  color: #888;
+}
+
 
 /* CTA Buttons */
 .cta-buttons {
