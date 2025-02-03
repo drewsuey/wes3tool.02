@@ -256,6 +256,19 @@ body {
   text-align: center;
 }
 
+/* Step 3 Review Section */
+.estimate-result ul {
+  color: #333; /* Ensure dark text color */
+  font-size: 1rem; /* Adjust for readability */
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.estimate-result ul li {
+  margin-bottom: 0.5rem;
+}
+
 /* Text in the Review Section */
 .estimate-result p,
 .estimate-result h2 {

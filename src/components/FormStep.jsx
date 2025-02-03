@@ -273,30 +273,28 @@ function FormStep({ onUpdate }) {
         </>
       )}
 
-      {step === 3 && (
-        <>
-          <h2>Step 3: Review & Submit</h2>
-          <p>Review your inputs before submitting:</p>
-          <ul>
-            <li>Site Size: {formData.siteSize} sq. ft</li>
-            <li>Floors: {formData.floors}</li>
-            <li>Staircases: {formData.stairs}</li>
-            <li>Construction Type: {formData.constructionType}</li>
-            <li>Construction Phase: {formData.constructionPhase}</li>
-            <li>Coverage Level: {formData.coverageLevel}</li>
-            <li>Interface Integration: {formData.interfaceIntegration ? 'Yes' : 'No'}</li>
-            {formData.interfaceIntegration && (
-              <li>Interface Details: {formData.interfaceDetails}</li>
-            )}
-            <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
-          </ul>
-
-          <button type="button" onClick={handlePrevious}>
-            Previous
-          </button>
-          <button type="submit">Submit</button>
-        </>
+{step === 3 && (
+  <>
+    <h2 style={{ color: "#333" }}>Step 3: Review & Submit</h2>
+    <p style={{ color: "#333" }}>Review your inputs before submitting:</p>
+    <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
+      <li>Site Size: {formData.siteSize} sq. ft</li>
+      <li>Floors: {formData.floors}</li>
+      <li>Staircases: {formData.stairs}</li>
+      <li>Construction Type: {formData.constructionType}</li>
+      <li>Construction Phase: {formData.constructionPhase}</li>
+      <li>Coverage Level: {formData.coverageLevel}</li>
+      <li>Interface Integration: {formData.interfaceIntegration ? 'Yes' : 'No'}</li>
+      {formData.interfaceIntegration && (
+        <li>Interface Details: {formData.interfaceDetails}</li>
       )}
+      <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
+    </ul>
+
+    <button type="button" onClick={handlePrevious}>Previous</button>
+    <button type="submit">Submit</button>
+  </>
+)}
     </form>
   );
 }
