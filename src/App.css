@@ -244,3 +244,20 @@ body {
   max-width: 100%;
   height: auto;
 }
+
+/* Review Section */
+.estimate-result {
+  margin-top: 2rem;
+  color: #333; /* Ensure text is visible */
+  background-color: #fff; /* Add a white background to avoid transparency issues */
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better contrast */
+  text-align: center;
+}
+
+/* Text in the Review Section */
+.estimate-result p,
+.estimate-result h2 {
+  color: #333; /* Ensure dark text */
+}

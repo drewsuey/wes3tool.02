@@ -114,25 +114,25 @@ function BudgetTool() {
         ) : (
           <div className="estimate-result">
             <h2>Device Estimate</h2>
-            <p>
+            <p style={{ color: "#333" }}>
               Smoke Detectors Needed: <strong>{data.smokeDetectors}</strong>
             </p>
-            <p>
+            <p style={{ color: "#333" }}>
               Heat Detectors Needed: <strong>{data.heatDetectors}</strong>
             </p>
-            <p>
+            <p style={{ color: "#333" }}>
               Call Points Needed: <strong>{data.callPoints}</strong>
             </p>
             {data.interfaceIntegration && (
-              <p>
+              <p style={{ color: "#333" }}>
                 Interface Unit: <strong>{data.interfaceUnitCount}</strong>
               </p>
             )}
-            <p>
+            <p style={{ color: "#333" }}>
               Total Devices: <strong>{data.totalDevices}</strong>
             </p>
             {data.reactIntegration && (
-              <p>
+              <p style={{ color: "#333" }}>
                 REACT Subscription: <strong>${data.reactAnnualCost}/year</strong>
               </p>
             )}
