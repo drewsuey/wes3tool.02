@@ -234,3 +234,13 @@ body {
     flex-direction: column;
   }
 }
+
+.chart-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.chart-section canvas {
+  max-width: 100%;
+  height: auto;
+}

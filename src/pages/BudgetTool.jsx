@@ -108,7 +108,7 @@ function BudgetTool() {
       <div className="budget-overlay"></div>
       <div className="budget-content">
         <h1 className="budget-title">WES3 Budget Tool</h1>
-
+  
         {!formSubmitted ? (
           <FormStep onUpdate={handleDataUpdate} />
         ) : (
@@ -136,6 +136,13 @@ function BudgetTool() {
                 REACT Subscription: <strong>${data.reactAnnualCost}/year</strong>
               </p>
             )}
+  
+            {/* Render the chart */}
+            <div className="chart-section">
+              <Chart data={data} />
+            </div>
+  
+            {/* CTA Buttons */}
             <div className="cta-buttons">
               <button onClick={handlePrint}>Print</button>
               <button onClick={handleDownloadPDF}>Download PDF</button>
@@ -146,7 +153,7 @@ function BudgetTool() {
         )}
       </div>
     </div>
-  );
+  );  
 }
 
 export default BudgetTool;
