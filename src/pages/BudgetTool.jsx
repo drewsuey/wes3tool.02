@@ -16,28 +16,31 @@ function BudgetTool() {
     const sqFt = parseInt(newData.siteSize || 0, 10);
     const floors = parseInt(newData.floors || 0, 10);
     const stairs = parseInt(newData.stairs || 0, 10);
-
-    // Coverage calculations (example only):
-    const smokeCoverage = Math.PI * Math.pow(25, 2); // ~1963 sq. ft
-    const heatCoverage  = Math.PI * Math.pow(17.5, 2); // ~962 sq. ft
-
+  
+    // Get coverage adjustment factor based on selected coverage level
+    const coverageLevel = newData.coverageLevel || "best"; // Default to best if not selected
+    let adjustmentFactor = 1; // Default is no adjustment (best coverage)
+    if (coverageLevel === "good") adjustmentFactor = 1.5; // 50% increase
+    if (coverageLevel === "better") adjustmentFactor = 1.25; // 25% increase
+  
+    // Adjust spacing based on coverage level
+    const smokeCoverage = Math.PI * Math.pow(25 * adjustmentFactor, 2); // Adjust smoke radius
+    const heatCoverage = Math.PI * Math.pow(17.5 * adjustmentFactor, 2); // Adjust heat radius
+  
     const smokeDetectors = Math.ceil(sqFt / smokeCoverage);
-    const heatDetectors  = Math.ceil(sqFt / heatCoverage);
-    const callPoints     = floors * stairs;
-
-    // If interfaceIntegration is checked, we add 1 device
+    const heatDetectors = Math.ceil(sqFt / heatCoverage);
+    const callPoints = floors * stairs;
+  
+    // If interfaceIntegration is checked, add 1 device
     const interfaceUnitCount = newData.interfaceIntegration ? 1 : 0;
-
-    // If reactIntegration is checked, store an annual cost (not a device)
-    const reactAnnualCost = newData.reactIntegration ? 2500 : 0; // e.g. $2500/year
-
+  
+    // If reactIntegration is checked, add the annual cost (not a device)
+    const reactAnnualCost = newData.reactIntegration ? 2500 : 0;
+  
     // Total devices = Smoke + Heat + Call Points + Interface
     const totalDevices =
-      smokeDetectors +
-      heatDetectors +
-      callPoints +
-      interfaceUnitCount;
-
+      smokeDetectors + heatDetectors + callPoints + interfaceUnitCount;
+  
     setData({
       ...newData,
       smokeDetectors,
@@ -46,8 +49,10 @@ function BudgetTool() {
       interfaceUnitCount,
       totalDevices,
       reactAnnualCost,
+      coverageLevel,
     });
   };
+  
 
   // 2) Print
   const handlePrint = () => {

@@ -105,6 +105,23 @@ function FormStep({ onUpdate }) {
             </select>
           </div>
 
+          <div className="form-group">
+            <label htmlFor="coverageLevel">Coverage Level:</label>
+            <select
+               name="coverageLevel"
+               id="coverageLevel"
+               required
+               data-tooltip-id="tooltip-coverage"
+               data-tooltip-content="Select the desired coverage level: Good (low coverage), Better (medium coverage), Best (maximum coverage)."
+           >
+            <option value="best">Best (Max Coverage)</option>
+            <option value="better">Better (Medium Coverage)</option>
+            <option value="good">Good (Low Coverage)</option>
+            </select>
+             <Tooltip id="tooltip-coverage" />
+          </div>
+
+
           <button type="button" onClick={handleNext}>Next</button>
         </>
       )}
