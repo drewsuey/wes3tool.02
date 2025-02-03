@@ -1,6 +1,6 @@
 # React + Vite
 
-wes3 tool 2.0 aa
+wes3 tool 2.0 aaa
 
 Currently, two official plugins are available:
 
