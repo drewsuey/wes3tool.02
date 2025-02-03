@@ -274,3 +274,15 @@ body {
 .estimate-result h2 {
   color: #333; /* Ensure dark text */
 }
+
+[data-tooltip-id] {
+  position: relative;
+}
+
+.react-tooltip {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}

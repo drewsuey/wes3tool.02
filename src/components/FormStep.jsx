@@ -35,151 +35,113 @@ function FormStep({ onUpdate }) {
   return (
     <form className="wes3-form" onSubmit={handleSubmit}>
       {step === 1 && (
-        <>
-          <h2>Step 1: Basic Site Information</h2>
-          <div className="form-group">
-            <label htmlFor="siteSize">
-              Site Size (sq. ft):
-              <span
-                data-tooltip-id="tooltip-siteSize"
-                data-tooltip-content="Enter the total area of the site in square feet."
-              >
-                ?
-              </span>
-            </label>
-            <input
-              type="number"
-              name="siteSize"
-              id="siteSize"
-              required
-              value={formData.siteSize}
-              onChange={handleChange}
-            />
-            <Tooltip id="tooltip-siteSize" />
-          </div>
+  <>
+    <h2>Step 1: Basic Site Information</h2>
+    <div className="form-group">
+      <label htmlFor="siteSize">Site Size (sq. ft):</label>
+      <input
+        type="number"
+        name="siteSize"
+        id="siteSize"
+        required
+        value={formData.siteSize}
+        onChange={handleChange}
+        data-tooltip-id="tooltip-siteSize"
+        data-tooltip-content="Enter the total area of the site in square feet."
+      />
+      <Tooltip id="tooltip-siteSize" />
+    </div>
 
-          <div className="form-group">
-            <label htmlFor="floors">
-              Number of Floors:
-              <span
-                data-tooltip-id="tooltip-floors"
-                data-tooltip-content="Include all levels, including basements, that require coverage."
-              >
-                ?
-              </span>
-            </label>
-            <input
-              type="number"
-              name="floors"
-              id="floors"
-              required
-              value={formData.floors}
-              onChange={handleChange}
-            />
-            <Tooltip id="tooltip-floors" />
-          </div>
+    <div className="form-group">
+      <label htmlFor="floors">Number of Floors:</label>
+      <input
+        type="number"
+        name="floors"
+        id="floors"
+        required
+        value={formData.floors}
+        onChange={handleChange}
+        data-tooltip-id="tooltip-floors"
+        data-tooltip-content="Enter the number of floors, including basements."
+      />
+      <Tooltip id="tooltip-floors" />
+    </div>
 
-          <div className="form-group">
-            <label htmlFor="stairs">
-              Number of Staircases:
-              <span
-                data-tooltip-id="tooltip-stairs"
-                data-tooltip-content="Enter the total number of staircases across all floors."
-              >
-                ?
-              </span>
-            </label>
-            <input
-              type="number"
-              name="stairs"
-              id="stairs"
-              required
-              value={formData.stairs}
-              onChange={handleChange}
-            />
-            <Tooltip id="tooltip-stairs" />
-          </div>
+    <div className="form-group">
+      <label htmlFor="stairs">Number of Staircases:</label>
+      <input
+        type="number"
+        name="stairs"
+        id="stairs"
+        required
+        value={formData.stairs}
+        onChange={handleChange}
+        data-tooltip-id="tooltip-stairs"
+        data-tooltip-content="Provide the total number of staircases in the building."
+      />
+      <Tooltip id="tooltip-stairs" />
+    </div>
 
-          <div className="form-group">
-            <label htmlFor="constructionType">
-              Type of Construction:
-              <span
-                data-tooltip-id="tooltip-constructionType"
-                data-tooltip-content="Select the type of construction for your project (e.g., Residential, Commercial)."
-              >
-                ?
-              </span>
-            </label>
-            <select
-              name="constructionType"
-              id="constructionType"
-              required
-              value={formData.constructionType}
-              onChange={handleChange}
-            >
-              <option value="">Select Type</option>
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="industrial">Industrial</option>
-              <option value="marine">Marine</option>
-            </select>
-            <Tooltip id="tooltip-constructionType" />
-          </div>
+    <div className="form-group">
+      <label htmlFor="constructionType">Type of Construction:</label>
+      <select
+        name="constructionType"
+        id="constructionType"
+        required
+        value={formData.constructionType}
+        onChange={handleChange}
+        data-tooltip-id="tooltip-constructionType"
+        data-tooltip-content="Select the type of construction: Residential, Commercial, Industrial, or Marine."
+      >
+        <option value="">Select Type</option>
+        <option value="residential">Residential</option>
+        <option value="commercial">Commercial</option>
+        <option value="industrial">Industrial</option>
+        <option value="marine">Marine</option>
+      </select>
+      <Tooltip id="tooltip-constructionType" />
+    </div>
 
-          <div className="form-group">
-            <label htmlFor="constructionPhase">
-              Phase of Construction:
-              <span
-                data-tooltip-id="tooltip-constructionPhase"
-                data-tooltip-content="Choose the phase of your project (e.g., Early Planning, Mid-Construction)."
-              >
-                ?
-              </span>
-            </label>
-            <select
-              name="constructionPhase"
-              id="constructionPhase"
-              required
-              value={formData.constructionPhase}
-              onChange={handleChange}
-            >
-              <option value="">Select Phase</option>
-              <option value="early">Early Planning</option>
-              <option value="mid">Mid-Construction</option>
-              <option value="finishing">Finishing Phase</option>
-            </select>
-            <Tooltip id="tooltip-constructionPhase" />
-          </div>
+    <div className="form-group">
+      <label htmlFor="constructionPhase">Phase of Construction:</label>
+      <select
+        name="constructionPhase"
+        id="constructionPhase"
+        required
+        value={formData.constructionPhase}
+        onChange={handleChange}
+        data-tooltip-id="tooltip-constructionPhase"
+        data-tooltip-content="Choose the phase of construction: Early Planning, Mid-Construction, or Finishing Phase."
+      >
+        <option value="">Select Phase</option>
+        <option value="early">Early Planning</option>
+        <option value="mid">Mid-Construction</option>
+        <option value="finishing">Finishing Phase</option>
+      </select>
+      <Tooltip id="tooltip-constructionPhase" />
+    </div>
 
-          <div className="form-group">
-            <label htmlFor="coverageLevel">
-              Coverage Level:
-              <span
-                data-tooltip-id="tooltip-coverageLevel"
-                data-tooltip-content="Select the desired coverage level: Good, Better, Best."
-              >
-                ?
-              </span>
-            </label>
-            <select
-              name="coverageLevel"
-              id="coverageLevel"
-              required
-              value={formData.coverageLevel}
-              onChange={handleChange}
-            >
-              <option value="best">Best</option>
-              <option value="better">Better</option>
-              <option value="good">Good</option>
-            </select>
-            <Tooltip id="tooltip-coverageLevel" />
-          </div>
+    <div className="form-group">
+      <label htmlFor="coverageLevel">Coverage Level:</label>
+      <select
+        name="coverageLevel"
+        id="coverageLevel"
+        required
+        value={formData.coverageLevel}
+        onChange={handleChange}
+        data-tooltip-id="tooltip-coverageLevel"
+        data-tooltip-content="Select the desired coverage level: Good, Better, Best."
+      >
+        <option value="best">Best</option>
+        <option value="better">Better</option>
+        <option value="good">Good</option>
+      </select>
+      <Tooltip id="tooltip-coverageLevel" />
+    </div>
 
-          <button type="button" onClick={handleNext}>
-            Next
-          </button>
-        </>
-      )}
+    <button type="button" onClick={handleNext}>Next</button>
+  </>
+)}
 
       {step === 2 && (
         <>
