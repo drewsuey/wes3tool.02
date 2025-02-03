@@ -19,26 +19,44 @@
   z-index: 1;
 }
 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #F4F4F4; /* Light gray background as fallback */
+  
+  /* Use a dynamic Ramtech-branded image */
+  background: url('/logo.jpg') no-repeat center center;
+  background-size: cover; /* Ensure the entire viewport is covered */
+}
+
 .hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
-  color: #fff;
+  color: #FFFFFF;
   max-width: 650px;
   margin: 0 auto;
+
+  /* Add subtle transparency to the text container for readability */
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1.5rem;
+  border-radius: 8px;
 }
 
 .hero-content h1 {
-  font-size: 3.5rem; /* Slightly larger for emphasis */
-  margin-bottom: 1rem;
-  font-weight: 700;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8); /* Text standout effect */
 }
 
 .hero-content p {
-  font-size: 1.4rem;
-  margin-bottom: 2rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  font-size: 1.5rem;
+  color: #FFFFFF;
+  margin-top: 0.5rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 /* Buttons */
