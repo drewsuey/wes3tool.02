@@ -10,6 +10,7 @@ function FormStep({ onUpdate }) {
     stairs: '',
     constructionType: '',
     constructionPhase: '',
+    coverageLevel: 'best',
     interfaceIntegration: false,
     interfaceDetails: '',
     reactIntegration: false,
@@ -37,7 +38,15 @@ function FormStep({ onUpdate }) {
         <>
           <h2>Step 1: Basic Site Information</h2>
           <div className="form-group">
-            <label htmlFor="siteSize">Site Size (sq. ft):</label>
+            <label htmlFor="siteSize">
+              Site Size (sq. ft):
+              <span
+                data-tooltip-id="tooltip-siteSize"
+                data-tooltip-content="Enter the total area of the site in square feet."
+              >
+                ?
+              </span>
+            </label>
             <input
               type="number"
               name="siteSize"
@@ -46,10 +55,19 @@ function FormStep({ onUpdate }) {
               value={formData.siteSize}
               onChange={handleChange}
             />
+            <Tooltip id="tooltip-siteSize" />
           </div>
 
           <div className="form-group">
-            <label htmlFor="floors">Number of Floors:</label>
+            <label htmlFor="floors">
+              Number of Floors:
+              <span
+                data-tooltip-id="tooltip-floors"
+                data-tooltip-content="Include all levels, including basements, that require coverage."
+              >
+                ?
+              </span>
+            </label>
             <input
               type="number"
               name="floors"
@@ -58,10 +76,19 @@ function FormStep({ onUpdate }) {
               value={formData.floors}
               onChange={handleChange}
             />
+            <Tooltip id="tooltip-floors" />
           </div>
 
           <div className="form-group">
-            <label htmlFor="stairs">Number of Staircases:</label>
+            <label htmlFor="stairs">
+              Number of Staircases:
+              <span
+                data-tooltip-id="tooltip-stairs"
+                data-tooltip-content="Enter the total number of staircases across all floors."
+              >
+                ?
+              </span>
+            </label>
             <input
               type="number"
               name="stairs"
@@ -70,10 +97,19 @@ function FormStep({ onUpdate }) {
               value={formData.stairs}
               onChange={handleChange}
             />
+            <Tooltip id="tooltip-stairs" />
           </div>
 
           <div className="form-group">
-            <label htmlFor="constructionType">Type of Construction:</label>
+            <label htmlFor="constructionType">
+              Type of Construction:
+              <span
+                data-tooltip-id="tooltip-constructionType"
+                data-tooltip-content="Select the type of construction for your project (e.g., Residential, Commercial)."
+              >
+                ?
+              </span>
+            </label>
             <select
               name="constructionType"
               id="constructionType"
@@ -87,10 +123,19 @@ function FormStep({ onUpdate }) {
               <option value="industrial">Industrial</option>
               <option value="marine">Marine</option>
             </select>
+            <Tooltip id="tooltip-constructionType" />
           </div>
 
           <div className="form-group">
-            <label htmlFor="constructionPhase">Phase of Construction:</label>
+            <label htmlFor="constructionPhase">
+              Phase of Construction:
+              <span
+                data-tooltip-id="tooltip-constructionPhase"
+                data-tooltip-content="Choose the phase of your project (e.g., Early Planning, Mid-Construction)."
+              >
+                ?
+              </span>
+            </label>
             <select
               name="constructionPhase"
               id="constructionPhase"
@@ -103,33 +148,42 @@ function FormStep({ onUpdate }) {
               <option value="mid">Mid-Construction</option>
               <option value="finishing">Finishing Phase</option>
             </select>
+            <Tooltip id="tooltip-constructionPhase" />
           </div>
 
           <div className="form-group">
-            <label htmlFor="coverageLevel">Coverage Level:</label>
+            <label htmlFor="coverageLevel">
+              Coverage Level:
+              <span
+                data-tooltip-id="tooltip-coverageLevel"
+                data-tooltip-content="Select the desired coverage level: Good, Better, Best."
+              >
+                ?
+              </span>
+            </label>
             <select
-               name="coverageLevel"
-               id="coverageLevel"
-               required
-               data-tooltip-id="tooltip-coverage"
-               data-tooltip-content="Select the desired coverage level: Good, Better, Best."
-           >
-            <option value="best">Best</option>
-            <option value="better">Better</option>
-            <option value="good">Good</option>
+              name="coverageLevel"
+              id="coverageLevel"
+              required
+              value={formData.coverageLevel}
+              onChange={handleChange}
+            >
+              <option value="best">Best</option>
+              <option value="better">Better</option>
+              <option value="good">Good</option>
             </select>
-             <Tooltip id="tooltip-coverage" />
+            <Tooltip id="tooltip-coverageLevel" />
           </div>
 
-
-          <button type="button" onClick={handleNext}>Next</button>
+          <button type="button" onClick={handleNext}>
+            Next
+          </button>
         </>
       )}
 
       {step === 2 && (
         <>
           <h2>Step 2: System Requirements</h2>
-
           <div className="highlight-section">
             <div className="highlight-card">
               <h3>Interface Device</h3>
@@ -158,12 +212,27 @@ function FormStep({ onUpdate }) {
                 onChange={handleChange}
               />
               Interface Integration
+              <span
+                data-tooltip-id="tooltip-interfaceIntegration"
+                data-tooltip-content="Enable this if you want to integrate with other fire panels or alarm systems."
+              >
+                ?
+              </span>
             </label>
+            <Tooltip id="tooltip-interfaceIntegration" />
           </div>
 
           {formData.interfaceIntegration && (
             <div className="form-group">
-              <label htmlFor="interfaceDetails">Describe Your Implementation Idea:</label>
+              <label htmlFor="interfaceDetails">
+                Describe Your Implementation Idea:
+                <span
+                  data-tooltip-id="tooltip-interfaceDetails"
+                  data-tooltip-content="Provide details about how you plan to use the interface device."
+                >
+                  ?
+                </span>
+              </label>
               <textarea
                 name="interfaceDetails"
                 id="interfaceDetails"
@@ -172,6 +241,7 @@ function FormStep({ onUpdate }) {
                 onChange={handleChange}
                 placeholder="Describe how you plan to integrate the interface unit"
               ></textarea>
+              <Tooltip id="tooltip-interfaceDetails" />
             </div>
           )}
 
@@ -184,11 +254,22 @@ function FormStep({ onUpdate }) {
                 onChange={handleChange}
               />
               REACT Integration
+              <span
+                data-tooltip-id="tooltip-reactIntegration"
+                data-tooltip-content="Enable REACT integration for remote monitoring and notifications."
+              >
+                ?
+              </span>
             </label>
+            <Tooltip id="tooltip-reactIntegration" />
           </div>
 
-          <button type="button" onClick={handlePrevious}>Previous</button>
-          <button type="button" onClick={handleNext}>Next</button>
+          <button type="button" onClick={handlePrevious}>
+            Previous
+          </button>
+          <button type="button" onClick={handleNext}>
+            Next
+          </button>
         </>
       )}
 
@@ -202,6 +283,7 @@ function FormStep({ onUpdate }) {
             <li>Staircases: {formData.stairs}</li>
             <li>Construction Type: {formData.constructionType}</li>
             <li>Construction Phase: {formData.constructionPhase}</li>
+            <li>Coverage Level: {formData.coverageLevel}</li>
             <li>Interface Integration: {formData.interfaceIntegration ? 'Yes' : 'No'}</li>
             {formData.interfaceIntegration && (
               <li>Interface Details: {formData.interfaceDetails}</li>
@@ -209,7 +291,9 @@ function FormStep({ onUpdate }) {
             <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
           </ul>
 
-          <button type="button" onClick={handlePrevious}>Previous</button>
+          <button type="button" onClick={handlePrevious}>
+            Previous
+          </button>
           <button type="submit">Submit</button>
         </>
       )}
