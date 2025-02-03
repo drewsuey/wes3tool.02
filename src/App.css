@@ -78,6 +78,35 @@ body {
   background-size: cover; /* or 'contain' if you want to see the entire logo */
 }
 
+body {
+  color: #222; /* Darker text for better readability */
+}
+
+label, input, select, textarea {
+  color: #222; /* Consistent and dark text color */
+}
+
+/* Focus Styles for Keyboard Navigation */
+input:focus, select:focus, textarea:focus, button:focus {
+  outline: 3px solid #FFA500; /* Highlight focus with orange border */
+  outline-offset: 2px; /* Add spacing between outline and element */
+}
+
+/* Buttons */
+button {
+  background-color: #FFA500; /* Orange */
+  color: #FFF; /* White text */
+  border: 2px solid transparent; /* Ensure focus outline is visible */
+}
+
+button:hover {
+  background-color: #FF8C00; /* Dark orange */
+}
+
+button:focus {
+  border-color: #FF8C00; /* Highlight border on focus */
+}
+
 /* 2) The full overlay across the entire container */
 .budget-overlay {
   position: absolute;
