@@ -130,11 +130,11 @@ function FormStep({ onUpdate }) {
         value={formData.coverageLevel}
         onChange={handleChange}
         data-tooltip-id="tooltip-coverageLevel"
-        data-tooltip-content="Select the desired coverage level: Good, Better, Best."
+        data-tooltip-content="Select the desired coverage level: Max, Medium, Low."
       >
-        <option value="best">Best</option>
-        <option value="better">Better</option>
-        <option value="good">Good</option>
+        <option value="max">Max</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
       </select>
       <Tooltip id="tooltip-coverageLevel" />
     </div>
