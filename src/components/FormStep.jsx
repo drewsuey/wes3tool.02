@@ -1,5 +1,5 @@
 // src/components/FormStep.jsx
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
 import './FormStep.css';
 
@@ -66,31 +66,120 @@ const INITIAL_FORM_DATA = {
   reactIntegration: false,
 };
 
+// Add validation messages
+const VALIDATION_MESSAGES = {
+  required: 'This field is required',
+  email: 'Please enter a valid email address',
+  phone: 'Please enter a valid phone number',
+  number: 'Please enter a valid number',
+  min: 'Value must be greater than 0'
+};
+
 function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Memoized handlers
+  // Validation functions
+  const validateField = useCallback((name, value) => {
+    switch (name) {
+      case 'email':
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : VALIDATION_MESSAGES.email;
+      case 'phone':
+        return value ? /^[\d\s-+()]*$/.test(value) ? '' : VALIDATION_MESSAGES.phone : '';
+      case 'siteSize':
+      case 'floors':
+      case 'stairs':
+        const num = Number(value);
+        return !value ? VALIDATION_MESSAGES.required :
+               isNaN(num) ? VALIDATION_MESSAGES.number :
+               num <= 0 ? VALIDATION_MESSAGES.min : '';
+      default:
+        return value ? '' : VALIDATION_MESSAGES.required;
+    }
+  }, []);
+
+  // Handle blur event for validation
+  const handleBlur = useCallback((e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setErrors(prev => ({
+      ...prev,
+      [name]: validateField(name, value)
+    }));
+  }, [validateField]);
+
+  // Enhanced change handler
   const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: newValue
+    }));
+
+    // Clear error when user starts typing
+    setErrors(prev => ({
+      ...prev,
+      [name]: ''
     }));
   }, []);
 
+  // Validate current step
+  const validateStep = useCallback(() => {
+    const fieldsToValidate = {
+      1: ['name', 'companyName', 'email'],
+      2: ['siteSize', 'floors', 'stairs', 'constructionType', 'constructionPhase'],
+      3: [], // Optional fields
+      4: []  // Review step
+    }[step];
+
+    const stepErrors = {};
+    fieldsToValidate.forEach(field => {
+      const error = validateField(field, formData[field]);
+      if (error) stepErrors[field] = error;
+    });
+
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
+  }, [step, formData, validateField]);
+
+  // Enhanced navigation handlers
   const handleNext = useCallback(() => {
-    setStep(prev => prev + 1);
-  }, []);
+    if (validateStep()) {
+      setStep(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [validateStep]);
 
   const handlePrevious = useCallback(() => {
     setStep(prev => prev - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const handleSubmit = useCallback((e) => {
+  // Enhanced submit handler
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    onUpdate(formData);
-  }, [formData, onUpdate]);
+    if (validateStep()) {
+      setIsSubmitting(true);
+      try {
+        await onUpdate(formData);
+      } catch (error) {
+        console.error('Submission error:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  }, [formData, onUpdate, validateStep]);
+
+  // Field error status
+  const getFieldStatus = useCallback((name) => {
+    if (!touched[name]) return '';
+    return errors[name] ? 'error' : 'success';
+  }, [touched, errors]);
 
   // Memoized progress bar calculation
   const progressBar = useMemo(() => {
@@ -159,7 +248,7 @@ function FormStep({ onUpdate }) {
       {step === 1 && (
         <>
           <h2>Step 1: Contact Information</h2>
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('name')}`}>
             <label htmlFor="name">Name:*</label>
             <input
               type="text"
@@ -168,11 +257,15 @@ function FormStep({ onUpdate }) {
               required
               value={formData.name}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Your full name"
             />
+            {errors.name && touched.name && (
+              <div className="error-message">{errors.name}</div>
+            )}
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('companyName')}`}>
             <label htmlFor="companyName">Company Name:*</label>
             <input
               type="text"
@@ -181,11 +274,15 @@ function FormStep({ onUpdate }) {
               required
               value={formData.companyName}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Your company name"
             />
+            {errors.companyName && touched.companyName && (
+              <div className="error-message">{errors.companyName}</div>
+            )}
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('email')}`}>
             <label htmlFor="email">Email:*</label>
             <input
               type="email"
@@ -194,11 +291,15 @@ function FormStep({ onUpdate }) {
               required
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="your.email@company.com"
             />
+            {errors.email && touched.email && (
+              <div className="error-message">{errors.email}</div>
+            )}
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('phone')}`}>
             <label htmlFor="phone">Phone: (Optional)</label>
             <input
               type="tel"
@@ -206,8 +307,12 @@ function FormStep({ onUpdate }) {
               id="phone"
               value={formData.phone}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Your contact number"
             />
+            {errors.phone && touched.phone && (
+              <div className="error-message">{errors.phone}</div>
+            )}
           </div>
 
           <div className="form-navigation">
@@ -215,6 +320,7 @@ function FormStep({ onUpdate }) {
               type="button"
               onClick={handleNext}
               className="nav-button next-button"
+              disabled={isSubmitting}
             >
               Next →
             </button>
@@ -225,7 +331,7 @@ function FormStep({ onUpdate }) {
       {step === 2 && (
         <>
           <h2>Step 2: Basic Site Information</h2>
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('siteSize')}`}>
             <label htmlFor="siteSize">Site Size (sq. ft):</label>
             <input
               type="number"
@@ -234,13 +340,17 @@ function FormStep({ onUpdate }) {
               required
               value={formData.siteSize}
               onChange={handleChange}
+              onBlur={handleBlur}
               data-tooltip-id="tooltip-siteSize"
               data-tooltip-content="Enter the total area of the site in square feet."
             />
+            {errors.siteSize && touched.siteSize && (
+              <div className="error-message">{errors.siteSize}</div>
+            )}
             <Tooltip id="tooltip-siteSize" />
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('floors')}`}>
             <label htmlFor="floors">Number of Floors:</label>
             <input
               type="number"
@@ -249,13 +359,17 @@ function FormStep({ onUpdate }) {
               required
               value={formData.floors}
               onChange={handleChange}
+              onBlur={handleBlur}
               data-tooltip-id="tooltip-floors"
               data-tooltip-content="Enter the number of floors, including basements."
             />
+            {errors.floors && touched.floors && (
+              <div className="error-message">{errors.floors}</div>
+            )}
             <Tooltip id="tooltip-floors" />
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('stairs')}`}>
             <label htmlFor="stairs">Number of Staircases:</label>
             <input
               type="number"
@@ -264,13 +378,17 @@ function FormStep({ onUpdate }) {
               required
               value={formData.stairs}
               onChange={handleChange}
+              onBlur={handleBlur}
               data-tooltip-id="tooltip-stairs"
               data-tooltip-content="Provide the total number of staircases in the building."
             />
+            {errors.stairs && touched.stairs && (
+              <div className="error-message">{errors.stairs}</div>
+            )}
             <Tooltip id="tooltip-stairs" />
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('constructionType')}`}>
             <label htmlFor="constructionType">Type of Construction:</label>
             <select
               name="constructionType"
@@ -278,6 +396,7 @@ function FormStep({ onUpdate }) {
               required
               value={formData.constructionType}
               onChange={handleChange}
+              onBlur={handleBlur}
               data-tooltip-id="tooltip-constructionType"
               data-tooltip-content="Select the type of construction: Residential, Commercial, Industrial, or Marine."
             >
@@ -286,10 +405,13 @@ function FormStep({ onUpdate }) {
                 <option key={type.value} value={type.value}>{type.label}</option>
               ))}
             </select>
+            {errors.constructionType && touched.constructionType && (
+              <div className="error-message">{errors.constructionType}</div>
+            )}
             <Tooltip id="tooltip-constructionType" />
           </div>
 
-          <div className="form-group">
+          <div className={`form-group ${getFieldStatus('constructionPhase')}`}>
             <label htmlFor="constructionPhase">Phase of Construction:</label>
             <select
               name="constructionPhase"
@@ -297,6 +419,7 @@ function FormStep({ onUpdate }) {
               required
               value={formData.constructionPhase}
               onChange={handleChange}
+              onBlur={handleBlur}
               data-tooltip-id="tooltip-constructionPhase"
               data-tooltip-content="Choose the phase of construction: Early Planning, Mid-Construction, or Finishing Phase."
             >
@@ -305,6 +428,9 @@ function FormStep({ onUpdate }) {
                 <option key={phase.value} value={phase.value}>{phase.label}</option>
               ))}
             </select>
+            {errors.constructionPhase && touched.constructionPhase && (
+              <div className="error-message">{errors.constructionPhase}</div>
+            )}
             <Tooltip id="tooltip-constructionPhase" />
           </div>
 
@@ -312,7 +438,7 @@ function FormStep({ onUpdate }) {
             <h3>Coverage Level Comparison</h3>
             {coverageCards}
 
-            <div className="form-group">
+            <div className={`form-group ${getFieldStatus('coverageLevel')}`}>
               <label htmlFor="coverageLevel">Select Coverage Level:</label>
               <select
                 name="coverageLevel"
@@ -320,6 +446,7 @@ function FormStep({ onUpdate }) {
                 required
                 value={formData.coverageLevel}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 data-tooltip-id="tooltip-coverageLevel"
                 data-tooltip-content="Select the desired coverage level based on your site requirements."
               >
@@ -327,6 +454,9 @@ function FormStep({ onUpdate }) {
                   <option key={level.value} value={level.value}>{level.label}</option>
                 ))}
               </select>
+              {errors.coverageLevel && touched.coverageLevel && (
+                <div className="error-message">{errors.coverageLevel}</div>
+              )}
               <Tooltip id="tooltip-coverageLevel" />
             </div>
           </div>
@@ -336,6 +466,7 @@ function FormStep({ onUpdate }) {
               type="button"
               onClick={handlePrevious}
               className="nav-button prev-button"
+              disabled={isSubmitting}
             >
               ← Previous
             </button>
@@ -343,6 +474,7 @@ function FormStep({ onUpdate }) {
               type="button"
               onClick={handleNext}
               className="nav-button next-button"
+              disabled={isSubmitting}
             >
               Next →
             </button>
@@ -372,7 +504,7 @@ function FormStep({ onUpdate }) {
             </div>
           </div>
 
-          <div className="form-group checkbox-group">
+          <div className={`form-group ${getFieldStatus('interfaceIntegration')}`}>
             <label>
               <input
                 type="checkbox"
@@ -388,11 +520,14 @@ function FormStep({ onUpdate }) {
                 ?
               </span>
             </label>
+            {errors.interfaceIntegration && touched.interfaceIntegration && (
+              <div className="error-message">{errors.interfaceIntegration}</div>
+            )}
             <Tooltip id="tooltip-interfaceIntegration" />
           </div>
 
           {formData.interfaceIntegration && (
-            <div className="form-group">
+            <div className={`form-group ${getFieldStatus('interfaceDetails')}`}>
               <label htmlFor="interfaceDetails">
                 Describe Your Implementation Idea:
                 <span
@@ -408,13 +543,17 @@ function FormStep({ onUpdate }) {
                 rows="3"
                 value={formData.interfaceDetails}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Describe how you plan to integrate the interface unit"
               ></textarea>
+              {errors.interfaceDetails && touched.interfaceDetails && (
+                <div className="error-message">{errors.interfaceDetails}</div>
+              )}
               <Tooltip id="tooltip-interfaceDetails" />
             </div>
           )}
 
-          <div className="form-group checkbox-group">
+          <div className={`form-group ${getFieldStatus('reactIntegration')}`}>
             <label>
               <input
                 type="checkbox"
@@ -430,6 +569,9 @@ function FormStep({ onUpdate }) {
                 ?
               </span>
             </label>
+            {errors.reactIntegration && touched.reactIntegration && (
+              <div className="error-message">{errors.reactIntegration}</div>
+            )}
             <Tooltip id="tooltip-reactIntegration" />
           </div>
 
@@ -438,6 +580,7 @@ function FormStep({ onUpdate }) {
               type="button"
               onClick={handlePrevious}
               className="nav-button prev-button"
+              disabled={isSubmitting}
             >
               ← Previous
             </button>
@@ -445,6 +588,7 @@ function FormStep({ onUpdate }) {
               type="button"
               onClick={handleNext}
               className="nav-button next-button"
+              disabled={isSubmitting}
             >
               Next →
             </button>
@@ -490,11 +634,16 @@ function FormStep({ onUpdate }) {
               type="button"
               onClick={handlePrevious}
               className="nav-button prev-button"
+              disabled={isSubmitting}
             >
               ← Previous
             </button>
-            <button type="submit" className="nav-button submit-button">
-              Calculate Estimate
+            <button 
+              type="submit" 
+              className={`nav-button submit-button ${isSubmitting ? 'loading' : ''}`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Calculating...' : 'Calculate Estimate'}
             </button>
           </div>
         </>
