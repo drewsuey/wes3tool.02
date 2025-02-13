@@ -83,26 +83,26 @@ function BudgetTool() {
   };
 
   // 4) Email
-  const handleEmail = () => {
-    const subject = encodeURIComponent('WES3 Budget Estimate');
-    const body = encodeURIComponent(`
-      Here's my WES3 budget estimate:
-      
-      Smoke Detectors: ${data.smokeDetectors || 0}
-      Heat Detectors:  ${data.heatDetectors || 0}
-      Call Points:     ${data.callPoints || 0}
-      Total Devices:   ${data.totalDevices || 0}
+  const handleEmail = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/send-estimate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
 
-      REACT Subscription: ${
-        data.reactIntegration
-          ? '$' + (data.reactAnnualCost || 0) + '/year'
-          : 'Not selected'
+      if (!response.ok) {
+        throw new Error('Failed to send estimate');
       }
-      
-      Let me know next steps!
-    `);
 
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      const result = await response.json();
+      alert('Estimate sent successfully to our sales team!');
+    } catch (error) {
+      console.error('Error sending estimate:', error);
+      alert('Failed to send estimate. Please try again later.');
+    }
   };
 
   return (
@@ -116,6 +116,14 @@ function BudgetTool() {
         ) : (
           <div className="estimate-result">
             <h2>Device Estimate</h2>
+            <div className="contact-info">
+              <h3>Contact Information</h3>
+              <p style={{ color: "#333" }}>Name: <strong>{data.name}</strong></p>
+              <p style={{ color: "#333" }}>Company: <strong>{data.companyName}</strong></p>
+              <p style={{ color: "#333" }}>Email: <strong>{data.email}</strong></p>
+              {data.phone && <p style={{ color: "#333" }}>Phone: <strong>{data.phone}</strong></p>}
+            </div>
+            
             <p style={{ color: "#333" }}>
               Smoke Detectors Needed: <strong>{data.smokeDetectors}</strong>
             </p>

@@ -5,7 +5,7 @@ import './FormStep.css';
 
 function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
   const [formData, setFormData] = useState({
     siteSize: '',
     floors: '',
@@ -16,6 +16,10 @@ function FormStep({ onUpdate }) {
     interfaceIntegration: false,
     interfaceDetails: '',
     reactIntegration: false,
+    name: '',
+    companyName: '',
+    email: '',
+    phone: '',
   });
 
   const handleChange = (e) => {
@@ -326,6 +330,75 @@ function FormStep({ onUpdate }) {
       </button>
       <button type="submit" className="nav-button submit-button">
         Submit
+      </button>
+    </div>
+  </>
+)}
+
+{step === 4 && (
+  <>
+    <h2>Step 4: Contact Information</h2>
+    <div className="form-group">
+      <label htmlFor="name">Name:*</label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        required
+        value={formData.name}
+        onChange={handleChange}
+        placeholder="Your full name"
+      />
+    </div>
+
+    <div className="form-group">
+      <label htmlFor="companyName">Company Name:*</label>
+      <input
+        type="text"
+        name="companyName"
+        id="companyName"
+        required
+        value={formData.companyName}
+        onChange={handleChange}
+        placeholder="Your company name"
+      />
+    </div>
+
+    <div className="form-group">
+      <label htmlFor="email">Email:*</label>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        required
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="your.email@company.com"
+      />
+    </div>
+
+    <div className="form-group">
+      <label htmlFor="phone">Phone: (Optional)</label>
+      <input
+        type="tel"
+        name="phone"
+        id="phone"
+        value={formData.phone}
+        onChange={handleChange}
+        placeholder="Your contact number"
+      />
+    </div>
+
+    <div className="form-navigation">
+      <button
+        type="button"
+        onClick={handlePrevious}
+        className="nav-button prev-button"
+      >
+        ← Previous
+      </button>
+      <button type="submit" className="nav-button submit-button">
+        Submit Estimate
       </button>
     </div>
   </>
