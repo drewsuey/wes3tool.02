@@ -215,6 +215,57 @@ function FormStep({ onUpdate }) {
             <Tooltip id="tooltip-constructionPhase" />
           </div>
 
+          <div className="coverage-comparison">
+            <h3>Coverage Level Comparison</h3>
+            <div className="coverage-cards">
+              <div className={`coverage-card ${formData.coverageLevel === 'max' ? 'selected' : ''}`}>
+                <h4>Maximum Coverage</h4>
+                <ul>
+                  <li>100% standard spacing</li>
+                  <li>Optimal detector placement</li>
+                  <li>Best for high-risk areas</li>
+                  <li>Fastest response time</li>
+                </ul>
+              </div>
+              <div className={`coverage-card ${formData.coverageLevel === 'medium' ? 'selected' : ''}`}>
+                <h4>Medium Coverage</h4>
+                <ul>
+                  <li>125% increased spacing</li>
+                  <li>Balanced coverage</li>
+                  <li>Suitable for most areas</li>
+                  <li>Cost-effective solution</li>
+                </ul>
+              </div>
+              <div className={`coverage-card ${formData.coverageLevel === 'low' ? 'selected' : ''}`}>
+                <h4>Low Coverage</h4>
+                <ul>
+                  <li>150% increased spacing</li>
+                  <li>Basic coverage</li>
+                  <li>For low-risk areas</li>
+                  <li>Most economical option</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coverageLevel">Select Coverage Level:</label>
+              <select
+                name="coverageLevel"
+                id="coverageLevel"
+                required
+                value={formData.coverageLevel}
+                onChange={handleChange}
+                data-tooltip-id="tooltip-coverageLevel"
+                data-tooltip-content="Select the desired coverage level based on your site requirements."
+              >
+                <option value="max">Maximum Coverage</option>
+                <option value="medium">Medium Coverage</option>
+                <option value="low">Low Coverage</option>
+              </select>
+              <Tooltip id="tooltip-coverageLevel" />
+            </div>
+          </div>
+
           <div className="form-navigation">
             <button
               type="button"

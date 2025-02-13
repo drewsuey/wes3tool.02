@@ -18,25 +18,34 @@ function BudgetTool() {
     const floors = parseInt(newData.floors || 0, 10);
     const stairs = parseInt(newData.stairs || 0, 10);
 
-    const coverageLevel = newData.coverageLevel || 'best'; // Default to best if not selected
-    let adjustmentFactor = 1; // Default is no adjustment (best coverage)
-    if (coverageLevel === 'good') adjustmentFactor = 1.5; // 50% increase
-    if (coverageLevel === 'better') adjustmentFactor = 1.25; // 25% increase
+    // Coverage level adjustments
+    let spacingMultiplier;
+    switch (newData.coverageLevel) {
+      case 'medium':
+        spacingMultiplier = 1.25; // 25% increased spacing
+        break;
+      case 'low':
+        spacingMultiplier = 1.5;  // 50% increased spacing
+        break;
+      default: // 'max'
+        spacingMultiplier = 1;    // Standard spacing
+    }
 
-    // Calculate total devices needed based on area
-    const deviceCoverage = Math.PI * Math.pow(25 * adjustmentFactor, 2);
-    const totalDetectorsNeeded = Math.ceil(sqFt / deviceCoverage);
-
+    // Calculate base coverage area with adjusted spacing
+    const baseDeviceCoverage = Math.PI * Math.pow(25 * spacingMultiplier, 2);
+    
+    // Calculate total detectors needed based on area and spacing
+    const totalDetectorsNeeded = Math.ceil(sqFt / baseDeviceCoverage);
+    
     // Apply 90-10 split for smoke vs heat detectors
-    const smokeDetectors = Math.ceil(totalDetectorsNeeded * 0.9); // 90% smoke detectors
-    const heatDetectors = Math.ceil(totalDetectorsNeeded * 0.1);  // 10% heat detectors
+    const smokeDetectors = Math.ceil(totalDetectorsNeeded * 0.9);
+    const heatDetectors = Math.ceil(totalDetectorsNeeded * 0.1);
     const callPoints = floors * stairs;
 
     const interfaceUnitCount = newData.interfaceIntegration ? 1 : 0;
     const reactAnnualCost = newData.reactIntegration ? 2500 : 0;
 
-    const totalDevices =
-      smokeDetectors + heatDetectors + callPoints + interfaceUnitCount;
+    const totalDevices = smokeDetectors + heatDetectors + callPoints + interfaceUnitCount;
 
     setData({
       ...newData,
@@ -46,10 +55,10 @@ function BudgetTool() {
       interfaceUnitCount,
       totalDevices,
       reactAnnualCost,
-      coverageLevel,
+      spacingMultiplier, // Store for reference
     });
 
-    setFormSubmitted(true); // Mark the form as submitted
+    setFormSubmitted(true);
   };
 
   // Reset the form
