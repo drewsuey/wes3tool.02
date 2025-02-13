@@ -7,6 +7,10 @@ function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
   const totalSteps = 4;
   const [formData, setFormData] = useState({
+    name: '',
+    companyName: '',
+    email: '',
+    phone: '',
     siteSize: '',
     floors: '',
     stairs: '',
@@ -16,10 +20,6 @@ function FormStep({ onUpdate }) {
     interfaceIntegration: false,
     interfaceDetails: '',
     reactIntegration: false,
-    name: '',
-    companyName: '',
-    email: '',
-    phone: '',
   });
 
   const handleChange = (e) => {
@@ -63,140 +63,180 @@ function FormStep({ onUpdate }) {
       {renderProgressBar()}
       
       {step === 1 && (
-  <>
-    <h2>Step 1: Basic Site Information</h2>
-    <div className="form-group">
-      <label htmlFor="siteSize">Site Size (sq. ft):</label>
-      <input
-        type="number"
-        name="siteSize"
-        id="siteSize"
-        required
-        value={formData.siteSize}
-        onChange={handleChange}
-        data-tooltip-id="tooltip-siteSize"
-        data-tooltip-content="Enter the total area of the site in square feet."
-      />
-      <Tooltip id="tooltip-siteSize" />
-    </div>
+        <>
+          <h2>Step 1: Contact Information</h2>
+          <div className="form-group">
+            <label htmlFor="name">Name:*</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your full name"
+            />
+          </div>
 
-    <div className="form-group">
-      <label htmlFor="floors">Number of Floors:</label>
-      <input
-        type="number"
-        name="floors"
-        id="floors"
-        required
-        value={formData.floors}
-        onChange={handleChange}
-        data-tooltip-id="tooltip-floors"
-        data-tooltip-content="Enter the number of floors, including basements."
-      />
-      <Tooltip id="tooltip-floors" />
-    </div>
+          <div className="form-group">
+            <label htmlFor="companyName">Company Name:*</label>
+            <input
+              type="text"
+              name="companyName"
+              id="companyName"
+              required
+              value={formData.companyName}
+              onChange={handleChange}
+              placeholder="Your company name"
+            />
+          </div>
 
-    <div className="form-group">
-      <label htmlFor="stairs">Number of Staircases:</label>
-      <input
-        type="number"
-        name="stairs"
-        id="stairs"
-        required
-        value={formData.stairs}
-        onChange={handleChange}
-        data-tooltip-id="tooltip-stairs"
-        data-tooltip-content="Provide the total number of staircases in the building."
-      />
-      <Tooltip id="tooltip-stairs" />
-    </div>
+          <div className="form-group">
+            <label htmlFor="email">Email:*</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="your.email@company.com"
+            />
+          </div>
 
-    <div className="form-group">
-      <label htmlFor="constructionType">Type of Construction:</label>
-      <select
-        name="constructionType"
-        id="constructionType"
-        required
-        value={formData.constructionType}
-        onChange={handleChange}
-        data-tooltip-id="tooltip-constructionType"
-        data-tooltip-content="Select the type of construction: Residential, Commercial, Industrial, or Marine."
-      >
-        <option value="">Select Type</option>
-        <option value="residential">Residential</option>
-        <option value="commercial">Commercial</option>
-        <option value="industrial">Industrial</option>
-        <option value="marine">Marine</option>
-      </select>
-      <Tooltip id="tooltip-constructionType" />
-    </div>
+          <div className="form-group">
+            <label htmlFor="phone">Phone: (Optional)</label>
+            <input
+              type="tel"
+              name="phone"
+              id="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Your contact number"
+            />
+          </div>
 
-    <div className="form-group">
-      <label htmlFor="constructionPhase">Phase of Construction:</label>
-      <select
-        name="constructionPhase"
-        id="constructionPhase"
-        required
-        value={formData.constructionPhase}
-        onChange={handleChange}
-        data-tooltip-id="tooltip-constructionPhase"
-        data-tooltip-content="Choose the phase of construction: Early Planning, Mid-Construction, or Finishing Phase."
-      >
-        <option value="">Select Phase</option>
-        <option value="early">Early Planning</option>
-        <option value="mid">Mid-Construction</option>
-        <option value="finishing">Finishing Phase</option>
-      </select>
-      <Tooltip id="tooltip-constructionPhase" />
-    </div>
-
-    <div className="form-group">
-      <label htmlFor="coverageLevel">Coverage Level:</label>
-      <select
-        name="coverageLevel"
-        id="coverageLevel"
-        required
-        value={formData.coverageLevel}
-        onChange={handleChange}
-        data-tooltip-id="tooltip-coverageLevel"
-        data-tooltip-content="Select the desired coverage level: Max, Medium, Low."
-      >
-        <option value="max">Max</option>
-        <option value="medium">Medium</option>
-        <option value="low">Low</option>
-      </select>
-      <Tooltip id="tooltip-coverageLevel" />
-    </div>
-
-    <div className="form-navigation">
-      {step > 1 && (
-        <button
-          type="button"
-          onClick={handlePrevious}
-          className="nav-button prev-button"
-        >
-          ← Previous
-        </button>
+          <div className="form-navigation">
+            <button
+              type="button"
+              onClick={handleNext}
+              className="nav-button next-button"
+            >
+              Next →
+            </button>
+          </div>
+        </>
       )}
-      {step < totalSteps ? (
-        <button
-          type="button"
-          onClick={handleNext}
-          className="nav-button next-button"
-        >
-          Next →
-        </button>
-      ) : (
-        <button type="submit" className="nav-button submit-button">
-          Calculate Estimate
-        </button>
-      )}
-    </div>
-  </>
-)}
 
       {step === 2 && (
         <>
-          <h2>Step 2: System Requirements</h2>
+          <h2>Step 2: Basic Site Information</h2>
+          <div className="form-group">
+            <label htmlFor="siteSize">Site Size (sq. ft):</label>
+            <input
+              type="number"
+              name="siteSize"
+              id="siteSize"
+              required
+              value={formData.siteSize}
+              onChange={handleChange}
+              data-tooltip-id="tooltip-siteSize"
+              data-tooltip-content="Enter the total area of the site in square feet."
+            />
+            <Tooltip id="tooltip-siteSize" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="floors">Number of Floors:</label>
+            <input
+              type="number"
+              name="floors"
+              id="floors"
+              required
+              value={formData.floors}
+              onChange={handleChange}
+              data-tooltip-id="tooltip-floors"
+              data-tooltip-content="Enter the number of floors, including basements."
+            />
+            <Tooltip id="tooltip-floors" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="stairs">Number of Staircases:</label>
+            <input
+              type="number"
+              name="stairs"
+              id="stairs"
+              required
+              value={formData.stairs}
+              onChange={handleChange}
+              data-tooltip-id="tooltip-stairs"
+              data-tooltip-content="Provide the total number of staircases in the building."
+            />
+            <Tooltip id="tooltip-stairs" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="constructionType">Type of Construction:</label>
+            <select
+              name="constructionType"
+              id="constructionType"
+              required
+              value={formData.constructionType}
+              onChange={handleChange}
+              data-tooltip-id="tooltip-constructionType"
+              data-tooltip-content="Select the type of construction: Residential, Commercial, Industrial, or Marine."
+            >
+              <option value="">Select Type</option>
+              <option value="residential">Residential</option>
+              <option value="commercial">Commercial</option>
+              <option value="industrial">Industrial</option>
+              <option value="marine">Marine</option>
+            </select>
+            <Tooltip id="tooltip-constructionType" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="constructionPhase">Phase of Construction:</label>
+            <select
+              name="constructionPhase"
+              id="constructionPhase"
+              required
+              value={formData.constructionPhase}
+              onChange={handleChange}
+              data-tooltip-id="tooltip-constructionPhase"
+              data-tooltip-content="Choose the phase of construction: Early Planning, Mid-Construction, or Finishing Phase."
+            >
+              <option value="">Select Phase</option>
+              <option value="early">Early Planning</option>
+              <option value="mid">Mid-Construction</option>
+              <option value="finishing">Finishing Phase</option>
+            </select>
+            <Tooltip id="tooltip-constructionPhase" />
+          </div>
+
+          <div className="form-navigation">
+            <button
+              type="button"
+              onClick={handlePrevious}
+              className="nav-button prev-button"
+            >
+              ← Previous
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className="nav-button next-button"
+            >
+              Next →
+            </button>
+          </div>
+        </>
+      )}
+
+      {step === 3 && (
+        <>
+          <h2>Step 3: System Requirements</h2>
           <div className="highlight-section">
             <div className="highlight-card">
               <h3>Interface Device</h3>
@@ -285,124 +325,64 @@ function FormStep({ onUpdate }) {
             >
               ← Previous
             </button>
-            {step < totalSteps ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="nav-button next-button"
-              >
-                Next →
-              </button>
-            ) : (
-              <button type="submit" className="nav-button submit-button">
-                Calculate Estimate
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleNext}
+              className="nav-button next-button"
+            >
+              Next →
+            </button>
           </div>
         </>
       )}
 
-{step === 3 && (
-  <>
-    <h2 style={{ color: "#333" }}>Step 3: Review & Submit</h2>
-    <p style={{ color: "#333" }}>Review your inputs before submitting:</p>
-    <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
-      <li>Site Size: {formData.siteSize} sq. ft</li>
-      <li>Floors: {formData.floors}</li>
-      <li>Staircases: {formData.stairs}</li>
-      <li>Construction Type: {formData.constructionType}</li>
-      <li>Construction Phase: {formData.constructionPhase}</li>
-      <li>Coverage Level: {formData.coverageLevel}</li>
-      <li>Interface Integration: {formData.interfaceIntegration ? 'Yes' : 'No'}</li>
-      {formData.interfaceIntegration && (
-        <li>Interface Details: {formData.interfaceDetails}</li>
+      {step === 4 && (
+        <>
+          <h2>Step 4: Review & Submit</h2>
+          <p style={{ color: "#333" }}>Review your inputs before submitting:</p>
+          
+          <div className="review-section">
+            <h3>Contact Information</h3>
+            <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
+              <li>Name: {formData.name}</li>
+              <li>Company: {formData.companyName}</li>
+              <li>Email: {formData.email}</li>
+              {formData.phone && <li>Phone: {formData.phone}</li>}
+            </ul>
+
+            <h3>Site Details</h3>
+            <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
+              <li>Site Size: {formData.siteSize} sq. ft</li>
+              <li>Floors: {formData.floors}</li>
+              <li>Staircases: {formData.stairs}</li>
+              <li>Construction Type: {formData.constructionType}</li>
+              <li>Construction Phase: {formData.constructionPhase}</li>
+            </ul>
+
+            <h3>System Requirements</h3>
+            <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
+              <li>Interface Integration: {formData.interfaceIntegration ? 'Yes' : 'No'}</li>
+              {formData.interfaceIntegration && (
+                <li>Interface Details: {formData.interfaceDetails}</li>
+              )}
+              <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
+            </ul>
+          </div>
+
+          <div className="form-navigation">
+            <button
+              type="button"
+              onClick={handlePrevious}
+              className="nav-button prev-button"
+            >
+              ← Previous
+            </button>
+            <button type="submit" className="nav-button submit-button">
+              Calculate Estimate
+            </button>
+          </div>
+        </>
       )}
-      <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
-    </ul>
-
-    <div className="form-navigation">
-      <button
-        type="button"
-        onClick={handlePrevious}
-        className="nav-button prev-button"
-      >
-        ← Previous
-      </button>
-      <button type="submit" className="nav-button submit-button">
-        Submit
-      </button>
-    </div>
-  </>
-)}
-
-{step === 4 && (
-  <>
-    <h2>Step 4: Contact Information</h2>
-    <div className="form-group">
-      <label htmlFor="name">Name:*</label>
-      <input
-        type="text"
-        name="name"
-        id="name"
-        required
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="Your full name"
-      />
-    </div>
-
-    <div className="form-group">
-      <label htmlFor="companyName">Company Name:*</label>
-      <input
-        type="text"
-        name="companyName"
-        id="companyName"
-        required
-        value={formData.companyName}
-        onChange={handleChange}
-        placeholder="Your company name"
-      />
-    </div>
-
-    <div className="form-group">
-      <label htmlFor="email">Email:*</label>
-      <input
-        type="email"
-        name="email"
-        id="email"
-        required
-        value={formData.email}
-        onChange={handleChange}
-        placeholder="your.email@company.com"
-      />
-    </div>
-
-    <div className="form-group">
-      <label htmlFor="phone">Phone: (Optional)</label>
-      <input
-        type="tel"
-        name="phone"
-        id="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        placeholder="Your contact number"
-      />
-    </div>
-
-    <div className="form-navigation">
-      <button
-        type="button"
-        onClick={handlePrevious}
-        className="nav-button prev-button"
-      >
-        ← Previous
-      </button>
-      <button type="submit" className="nav-button submit-button">
-        Submit Estimate
-      </button>
-    </div>
-  </>
-)}
     </form>
   );
 }
