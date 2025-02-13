@@ -12,10 +12,21 @@ app.use(express.json());
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    pass: process.env.EMAIL_PASS // This should be your App Password, not your regular password
+  }
+});
+
+// Verify transporter configuration
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log('Server error:', error);
+  } else {
+    console.log('Server is ready to send emails');
   }
 });
 
@@ -74,18 +85,21 @@ app.post('/api/send-estimate', async (req, res) => {
     `;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: {
+        name: 'WES3 Budget Tool',
+        address: process.env.EMAIL_USER
+      },
       to: process.env.RECIPIENT_EMAIL,
       subject: 'New WES3 Budget Estimate Request',
       text: emailContent,
-      replyTo: email // Set reply-to as the customer's email
+      replyTo: email
     };
 
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: 'Estimate sent successfully' });
   } catch (error) {
     console.error('Error sending email:', error);
-    res.status(500).json({ error: 'Failed to send estimate' });
+    res.status(500).json({ error: 'Failed to send estimate', details: error.message });
   }
 });
 
