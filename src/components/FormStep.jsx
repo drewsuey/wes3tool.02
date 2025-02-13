@@ -1,9 +1,11 @@
 // src/components/FormStep.jsx
 import React, { useState } from 'react';
 import { Tooltip } from 'react-tooltip';
+import './FormStep.css';
 
 function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
+  const totalSteps = 3;
   const [formData, setFormData] = useState({
     siteSize: '',
     floors: '',
@@ -32,8 +34,30 @@ function FormStep({ onUpdate }) {
     onUpdate(formData);
   };
 
+  const renderProgressBar = () => {
+    const progress = (step / totalSteps) * 100;
+    return (
+      <div className="progress-container">
+        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+        <div className="steps-indicator">
+          {Array.from({ length: totalSteps }, (_, i) => (
+            <div
+              key={i}
+              className={`step-dot ${i + 1 <= step ? 'active' : ''}`}
+              data-tooltip-id={`step-${i + 1}`}
+              data-tooltip-content={`Step ${i + 1}`}
+            />
+          ))}
+        </div>
+        <div className="step-text">Step {step} of {totalSteps}</div>
+      </div>
+    );
+  };
+
   return (
     <form className="wes3-form" onSubmit={handleSubmit}>
+      {renderProgressBar()}
+      
       {step === 1 && (
   <>
     <h2>Step 1: Basic Site Information</h2>
@@ -139,7 +163,30 @@ function FormStep({ onUpdate }) {
       <Tooltip id="tooltip-coverageLevel" />
     </div>
 
-    <button type="button" onClick={handleNext}>Next</button>
+    <div className="form-navigation">
+      {step > 1 && (
+        <button
+          type="button"
+          onClick={handlePrevious}
+          className="nav-button prev-button"
+        >
+          ← Previous
+        </button>
+      )}
+      {step < totalSteps ? (
+        <button
+          type="button"
+          onClick={handleNext}
+          className="nav-button next-button"
+        >
+          Next →
+        </button>
+      ) : (
+        <button type="submit" className="nav-button submit-button">
+          Calculate Estimate
+        </button>
+      )}
+    </div>
   </>
 )}
 
@@ -226,12 +273,28 @@ function FormStep({ onUpdate }) {
             <Tooltip id="tooltip-reactIntegration" />
           </div>
 
-          <button type="button" onClick={handlePrevious}>
-            Previous
-          </button>
-          <button type="button" onClick={handleNext}>
-            Next
-          </button>
+          <div className="form-navigation">
+            <button
+              type="button"
+              onClick={handlePrevious}
+              className="nav-button prev-button"
+            >
+              ← Previous
+            </button>
+            {step < totalSteps ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="nav-button next-button"
+              >
+                Next →
+              </button>
+            ) : (
+              <button type="submit" className="nav-button submit-button">
+                Calculate Estimate
+              </button>
+            )}
+          </div>
         </>
       )}
 
@@ -253,8 +316,18 @@ function FormStep({ onUpdate }) {
       <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
     </ul>
 
-    <button type="button" onClick={handlePrevious}>Previous</button>
-    <button type="submit">Submit</button>
+    <div className="form-navigation">
+      <button
+        type="button"
+        onClick={handlePrevious}
+        className="nav-button prev-button"
+      >
+        ← Previous
+      </button>
+      <button type="submit" className="nav-button submit-button">
+        Submit
+      </button>
+    </div>
   </>
 )}
     </form>
