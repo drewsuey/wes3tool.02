@@ -23,11 +23,13 @@ function BudgetTool() {
     if (coverageLevel === 'good') adjustmentFactor = 1.5; // 50% increase
     if (coverageLevel === 'better') adjustmentFactor = 1.25; // 25% increase
 
-    const smokeCoverage = Math.PI * Math.pow(25 * adjustmentFactor, 2);
-    const heatCoverage = Math.PI * Math.pow(17.5 * adjustmentFactor, 2);
+    // Calculate total devices needed based on area
+    const deviceCoverage = Math.PI * Math.pow(25 * adjustmentFactor, 2);
+    const totalDetectorsNeeded = Math.ceil(sqFt / deviceCoverage);
 
-    const smokeDetectors = Math.ceil(sqFt / smokeCoverage);
-    const heatDetectors = Math.ceil(sqFt / heatCoverage);
+    // Apply 90-10 split for smoke vs heat detectors
+    const smokeDetectors = Math.ceil(totalDetectorsNeeded * 0.9); // 90% smoke detectors
+    const heatDetectors = Math.ceil(totalDetectorsNeeded * 0.1);  // 10% heat detectors
     const callPoints = floors * stairs;
 
     const interfaceUnitCount = newData.interfaceIntegration ? 1 : 0;
