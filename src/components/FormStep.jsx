@@ -1,50 +1,105 @@
 // src/components/FormStep.jsx
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-tooltip';
 import './FormStep.css';
 
+// Separate constant data
+const CONSTRUCTION_TYPES = [
+  { value: 'residential', label: 'Residential' },
+  { value: 'commercial', label: 'Commercial' },
+  { value: 'industrial', label: 'Industrial' },
+  { value: 'marine', label: 'Marine' }
+];
+
+const CONSTRUCTION_PHASES = [
+  { value: 'early', label: 'Early Planning' },
+  { value: 'mid', label: 'Mid-Construction' },
+  { value: 'finishing', label: 'Finishing Phase' }
+];
+
+const COVERAGE_LEVELS = [
+  { 
+    value: 'max',
+    label: 'Maximum Coverage',
+    features: [
+      '100% standard spacing',
+      'Optimal detector placement',
+      'Best for high-risk areas',
+      'Fastest response time'
+    ]
+  },
+  {
+    value: 'medium',
+    label: 'Medium Coverage',
+    features: [
+      '125% increased spacing',
+      'Balanced coverage',
+      'Suitable for most areas',
+      'Cost-effective solution'
+    ]
+  },
+  {
+    value: 'low',
+    label: 'Low Coverage',
+    features: [
+      '150% increased spacing',
+      'Basic coverage',
+      'For low-risk areas',
+      'Most economical option'
+    ]
+  }
+];
+
+const INITIAL_FORM_DATA = {
+  name: '',
+  companyName: '',
+  email: '',
+  phone: '',
+  siteSize: '',
+  floors: '',
+  stairs: '',
+  constructionType: '',
+  constructionPhase: '',
+  coverageLevel: 'max',
+  interfaceIntegration: false,
+  interfaceDetails: '',
+  reactIntegration: false,
+};
+
 function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
-  const [formData, setFormData] = useState({
-    name: '',
-    companyName: '',
-    email: '',
-    phone: '',
-    siteSize: '',
-    floors: '',
-    stairs: '',
-    constructionType: '',
-    constructionPhase: '',
-    coverageLevel: 'best',
-    interfaceIntegration: false,
-    interfaceDetails: '',
-    reactIntegration: false,
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
-  const handleChange = (e) => {
+  // Memoized handlers
+  const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: type === 'checkbox' ? checked : value,
-    });
-  };
+    }));
+  }, []);
 
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handlePrevious = () => setStep((prev) => prev - 1);
+  const handleNext = useCallback(() => {
+    setStep(prev => prev + 1);
+  }, []);
 
-  const handleSubmit = (e) => {
+  const handlePrevious = useCallback(() => {
+    setStep(prev => prev - 1);
+  }, []);
+
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     onUpdate(formData);
-  };
+  }, [formData, onUpdate]);
 
-  const renderProgressBar = () => {
-    const progress = (step / totalSteps) * 100;
+  // Memoized progress bar calculation
+  const progressBar = useMemo(() => {
+    const progress = (step / 4) * 100;
     return (
       <div className="progress-container">
         <div className="progress-bar" style={{ width: `${progress}%` }}></div>
         <div className="steps-indicator">
-          {Array.from({ length: totalSteps }, (_, i) => (
+          {Array.from({ length: 4 }, (_, i) => (
             <div
               key={i}
               className={`step-dot ${i + 1 <= step ? 'active' : ''}`}
@@ -53,14 +108,53 @@ function FormStep({ onUpdate }) {
             />
           ))}
         </div>
-        <div className="step-text">Step {step} of {totalSteps}</div>
+        <div className="step-text">Step {step} of 4</div>
       </div>
     );
-  };
+  }, [step]);
+
+  // Memoized coverage cards
+  const coverageCards = useMemo(() => (
+    <div className="coverage-cards">
+      {COVERAGE_LEVELS.map(level => (
+        <div
+          key={level.value}
+          className={`coverage-card ${formData.coverageLevel === level.value ? 'selected' : ''}`}
+          onClick={() => handleChange({
+            target: { name: 'coverageLevel', value: level.value }
+          })}
+        >
+          <h4>{level.label}</h4>
+          <ul>
+            {level.features.map((feature, index) => (
+              <li key={index}>{feature}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  ), [formData.coverageLevel, handleChange]);
+
+  // Memoized form validation
+  const isStepValid = useMemo(() => {
+    switch (step) {
+      case 1:
+        return formData.name && formData.companyName && formData.email;
+      case 2:
+        return formData.siteSize && formData.floors && formData.stairs && 
+               formData.constructionType && formData.constructionPhase;
+      case 3:
+        return true; // Optional selections
+      case 4:
+        return true; // Review step
+      default:
+        return false;
+    }
+  }, [step, formData]);
 
   return (
     <form className="wes3-form" onSubmit={handleSubmit}>
-      {renderProgressBar()}
+      {progressBar}
       
       {step === 1 && (
         <>
@@ -188,10 +282,9 @@ function FormStep({ onUpdate }) {
               data-tooltip-content="Select the type of construction: Residential, Commercial, Industrial, or Marine."
             >
               <option value="">Select Type</option>
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="industrial">Industrial</option>
-              <option value="marine">Marine</option>
+              {CONSTRUCTION_TYPES.map(type => (
+                <option key={type.value} value={type.value}>{type.label}</option>
+              ))}
             </select>
             <Tooltip id="tooltip-constructionType" />
           </div>
@@ -208,44 +301,16 @@ function FormStep({ onUpdate }) {
               data-tooltip-content="Choose the phase of construction: Early Planning, Mid-Construction, or Finishing Phase."
             >
               <option value="">Select Phase</option>
-              <option value="early">Early Planning</option>
-              <option value="mid">Mid-Construction</option>
-              <option value="finishing">Finishing Phase</option>
+              {CONSTRUCTION_PHASES.map(phase => (
+                <option key={phase.value} value={phase.value}>{phase.label}</option>
+              ))}
             </select>
             <Tooltip id="tooltip-constructionPhase" />
           </div>
 
           <div className="coverage-comparison">
             <h3>Coverage Level Comparison</h3>
-            <div className="coverage-cards">
-              <div className={`coverage-card ${formData.coverageLevel === 'max' ? 'selected' : ''}`}>
-                <h4>Maximum Coverage</h4>
-                <ul>
-                  <li>100% standard spacing</li>
-                  <li>Optimal detector placement</li>
-                  <li>Best for high-risk areas</li>
-                  <li>Fastest response time</li>
-                </ul>
-              </div>
-              <div className={`coverage-card ${formData.coverageLevel === 'medium' ? 'selected' : ''}`}>
-                <h4>Medium Coverage</h4>
-                <ul>
-                  <li>125% increased spacing</li>
-                  <li>Balanced coverage</li>
-                  <li>Suitable for most areas</li>
-                  <li>Cost-effective solution</li>
-                </ul>
-              </div>
-              <div className={`coverage-card ${formData.coverageLevel === 'low' ? 'selected' : ''}`}>
-                <h4>Low Coverage</h4>
-                <ul>
-                  <li>150% increased spacing</li>
-                  <li>Basic coverage</li>
-                  <li>For low-risk areas</li>
-                  <li>Most economical option</li>
-                </ul>
-              </div>
-            </div>
+            {coverageCards}
 
             <div className="form-group">
               <label htmlFor="coverageLevel">Select Coverage Level:</label>
@@ -258,9 +323,9 @@ function FormStep({ onUpdate }) {
                 data-tooltip-id="tooltip-coverageLevel"
                 data-tooltip-content="Select the desired coverage level based on your site requirements."
               >
-                <option value="max">Maximum Coverage</option>
-                <option value="medium">Medium Coverage</option>
-                <option value="low">Low Coverage</option>
+                {COVERAGE_LEVELS.map(level => (
+                  <option key={level.value} value={level.value}>{level.label}</option>
+                ))}
               </select>
               <Tooltip id="tooltip-coverageLevel" />
             </div>
@@ -438,4 +503,5 @@ function FormStep({ onUpdate }) {
   );
 }
 
-export default FormStep;
+// Memoize the entire component
+export default React.memo(FormStep);
