@@ -22,8 +22,6 @@ const COVERAGE_LEVELS = [
     value: 'max',
     label: 'Maximum Coverage',
     features: [
-      '100% standard spacing',
-      'Optimal detector placement',
       'Best for high-risk areas',
       'Fastest response time'
     ]
@@ -32,8 +30,6 @@ const COVERAGE_LEVELS = [
     value: 'medium',
     label: 'Medium Coverage',
     features: [
-      '125% increased spacing',
-      'Balanced coverage',
       'Suitable for most areas',
       'Cost-effective solution'
     ]
@@ -42,8 +38,6 @@ const COVERAGE_LEVELS = [
     value: 'low',
     label: 'Low Coverage',
     features: [
-      '150% increased spacing',
-      'Basic coverage',
       'For low-risk areas',
       'Most economical option'
     ]
