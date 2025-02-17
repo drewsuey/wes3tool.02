@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
 import './FormStep.css';
+import { coverageLevels } from '../data/coverageLevels';
 
 // Separate constant data
 const CONSTRUCTION_TYPES = [
@@ -15,33 +16,6 @@ const CONSTRUCTION_PHASES = [
   { value: 'early', label: 'Early Planning' },
   { value: 'mid', label: 'Mid-Construction' },
   { value: 'finishing', label: 'Finishing Phase' }
-];
-
-const COVERAGE_LEVELS = [
-  { 
-    value: 'max',
-    label: 'Maximum Coverage',
-    features: [
-      'Best for high-risk areas',
-      'Fastest response time'
-    ]
-  },
-  {
-    value: 'medium',
-    label: 'Medium Coverage',
-    features: [
-      'Suitable for most areas',
-      'Cost-effective solution'
-    ]
-  },
-  {
-    value: 'low',
-    label: 'Low Coverage',
-    features: [
-      'For low-risk areas',
-      'Most economical option'
-    ]
-  }
 ];
 
 const INITIAL_FORM_DATA = {
@@ -199,20 +173,24 @@ function FormStep({ onUpdate }) {
   // Memoized coverage cards
   const coverageCards = useMemo(() => (
     <div className="coverage-cards">
-      {COVERAGE_LEVELS.map(level => (
+      {Object.entries(coverageLevels).map(([level, details]) => (
         <div
-          key={level.value}
-          className={`coverage-card ${formData.coverageLevel === level.value ? 'selected' : ''}`}
+          key={level}
+          className={`coverage-card ${formData.coverageLevel === level ? 'selected' : ''}`}
           onClick={() => handleChange({
-            target: { name: 'coverageLevel', value: level.value }
+            target: { name: 'coverageLevel', value: level }
           })}
         >
-          <h4>{level.label}</h4>
+          <h3>{details.title}</h3>
+          <p>{details.description}</p>
           <ul>
-            {level.features.map((feature, index) => (
+            {details.features.map((feature, index) => (
               <li key={index}>{feature}</li>
             ))}
           </ul>
+          <p className="recommended-for">
+            Recommended for: {details.recommendedFor}
+          </p>
         </div>
       ))}
     </div>
@@ -331,12 +309,13 @@ function FormStep({ onUpdate }) {
               type="number"
               name="siteSize"
               id="siteSize"
+              className="form-control"
               required
               value={formData.siteSize}
               onChange={handleChange}
               onBlur={handleBlur}
               data-tooltip-id="tooltip-siteSize"
-              data-tooltip-content="Enter the total area of the site in square feet."
+              data-tooltip-content="Enter the total square footage of your site"
             />
             {errors.siteSize && touched.siteSize && (
               <div className="error-message">{errors.siteSize}</div>
@@ -428,30 +407,10 @@ function FormStep({ onUpdate }) {
             <Tooltip id="tooltip-constructionPhase" />
           </div>
 
-          <div className="coverage-comparison">
-            <h3>Coverage Level Comparison</h3>
-            {coverageCards}
-
-            <div className={`form-group ${getFieldStatus('coverageLevel')}`}>
-              <label htmlFor="coverageLevel">Select Coverage Level:</label>
-              <select
-                name="coverageLevel"
-                id="coverageLevel"
-                required
-                value={formData.coverageLevel}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                data-tooltip-id="tooltip-coverageLevel"
-                data-tooltip-content="Select the desired coverage level based on your site requirements."
-              >
-                {COVERAGE_LEVELS.map(level => (
-                  <option key={level.value} value={level.value}>{level.label}</option>
-                ))}
-              </select>
-              {errors.coverageLevel && touched.coverageLevel && (
-                <div className="error-message">{errors.coverageLevel}</div>
-              )}
-              <Tooltip id="tooltip-coverageLevel" />
+          <div className="form-group">
+            <label htmlFor="coverageLevel">Coverage Level:</label>
+            <div className="coverage-comparison">
+              {coverageCards}
             </div>
           </div>
 

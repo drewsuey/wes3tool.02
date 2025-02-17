@@ -1,0 +1,79 @@
+:root {
+  --wes-orange: #FF6B1A;
+  --wes-dark: #333333;
+  --wes-light: #F5F5F5;
+  --wes-gray: #666666;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Base styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Form styling */
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--wes-orange);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.3);
+}
+
+/* Progress bar */
+.progress-bar {
+  background: var(--wes-light);
+  height: 8px;
+  border-radius: 4px;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.progress-fill {
+  background: var(--wes-orange);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Coverage cards */
+.coverage-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.coverage-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease;
+}
+
+.coverage-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .coverage-comparison {
+    grid-template-columns: 1fr;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+} 
