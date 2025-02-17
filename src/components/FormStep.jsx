@@ -43,6 +43,33 @@ const VALIDATION_MESSAGES = {
   min: 'Value must be greater than 0'
 };
 
+const COVERAGE_LEVELS = [
+  { 
+    value: 'max',
+    label: 'Maximum Coverage',
+    features: [
+      'Complete protection for high-risk areas',
+      '24/7 monitoring'
+    ]
+  },
+  {
+    value: 'medium',
+    label: 'Medium Coverage',
+    features: [
+      'Balanced protection',
+      'Standard coverage'
+    ]
+  },
+  {
+    value: 'low',
+    label: 'Low Coverage',
+    features: [
+      'Basic protection for low-risk areas',
+      'Essential coverage'
+    ]
+  }
+];
+
 function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
@@ -173,24 +200,20 @@ function FormStep({ onUpdate }) {
   // Memoized coverage cards
   const coverageCards = useMemo(() => (
     <div className="coverage-cards">
-      {Object.entries(coverageLevels).map(([level, details]) => (
+      {COVERAGE_LEVELS.map(level => (
         <div
-          key={level}
-          className={`coverage-card ${formData.coverageLevel === level ? 'selected' : ''}`}
+          key={level.value}
+          className={`coverage-card ${formData.coverageLevel === level.value ? 'selected' : ''}`}
           onClick={() => handleChange({
-            target: { name: 'coverageLevel', value: level }
+            target: { name: 'coverageLevel', value: level.value }
           })}
         >
-          <h3>{details.title}</h3>
-          <p>{details.description}</p>
+          <h4>{level.label}</h4>
           <ul>
-            {details.features.map((feature, index) => (
+            {level.features.map((feature, index) => (
               <li key={index}>{feature}</li>
             ))}
           </ul>
-          <p className="recommended-for">
-            Recommended for: {details.recommendedFor}
-          </p>
         </div>
       ))}
     </div>
