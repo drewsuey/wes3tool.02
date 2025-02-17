@@ -296,6 +296,9 @@
   padding: 2rem;
   border-radius: 12px;
   margin: 1.5rem 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .review-section h3 {
@@ -303,6 +306,7 @@
   margin: 1.5rem 0 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #e0e0e0;
+  text-align: center;
 }
 
 .review-section h3:first-child {
@@ -312,12 +316,16 @@
 .review-list {
   margin: 0;
   padding: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .review-item {
   display: flex;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid #eee;
+  align-items: center;
 }
 
 .review-item:last-child {
@@ -325,15 +333,52 @@
 }
 
 .review-item dt {
-  flex: 0 0 200px;
+  flex: 0 0 180px;
   font-weight: 500;
   color: #666;
+  text-align: right;
+  padding-right: 1rem;
 }
 
 .review-item dd {
   flex: 1;
   margin: 0;
   color: #333;
+  text-align: left;
+  word-break: break-word;
+}
+
+/* Step 4 specific styles */
+[role="tabpanel"][aria-labelledby="step-4"] > p {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+/* Mobile adjustments for review section */
+@media (max-width: 768px) {
+  .review-section {
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .review-item {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+  }
+
+  .review-item dt {
+    flex: none;
+    text-align: left;
+    padding-right: 0;
+  }
+
+  .review-item dd {
+    width: 100%;
+    text-align: left;
+  }
 }
 
 /* Checkbox Group */
@@ -396,43 +441,6 @@ legend[aria-required="true"]::after {
 }
 
 /* Mobile Improvements */
-@media (max-width: 768px) {
-  .review-item {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .review-item dt {
-    flex: none;
-  }
-
-  .checkbox-group {
-    flex-wrap: wrap;
-  }
-}
-
-/* Animations */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .wes3-form {
     padding: 1rem;
