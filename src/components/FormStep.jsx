@@ -70,6 +70,14 @@ const COVERAGE_LEVELS = [
   }
 ];
 
+// Add step descriptions constant
+const STEP_DESCRIPTIONS = [
+  { title: 'Contact', description: 'Contact Information' },
+  { title: 'Site', description: 'Site Information' },
+  { title: 'System', description: 'System Requirements' },
+  { title: 'Review', description: 'Review & Submit' }
+];
+
 function FormStep({ onUpdate }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
@@ -176,30 +184,39 @@ function FormStep({ onUpdate }) {
     return errors[name] ? 'error' : 'success';
   }, [touched, errors]);
 
-  // Memoized progress bar calculation
+  // Update the progress bar calculation
   const progressBar = useMemo(() => {
     const progress = (step / 4) * 100;
     return (
-      <div className="progress-container">
-        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-        <div className="steps-indicator">
-          {Array.from({ length: 4 }, (_, i) => (
-            <div
-              key={i}
-              className={`step-dot ${i + 1 <= step ? 'active' : ''}`}
-              data-tooltip-id={`step-${i + 1}`}
-              data-tooltip-content={`Step ${i + 1}`}
-            />
-          ))}
+      <div className="progress-container" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">
+        <div className="progress-track">
+          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
         </div>
-        <div className="step-text">Step {step} of 4</div>
+        <nav aria-label="Form Steps" className="steps-indicator">
+          {STEP_DESCRIPTIONS.map((stepInfo, index) => (
+            <div
+              key={index}
+              className={`step-item ${index + 1 <= step ? 'active' : ''} ${index + 1 < step ? 'completed' : ''}`}
+              role="tab"
+              aria-selected={index + 1 === step}
+              aria-label={`Step ${index + 1}: ${stepInfo.title}`}
+              tabIndex={index + 1 === step ? 0 : -1}
+            >
+              <div className="step-number" aria-hidden="true">{index + 1}</div>
+              <div className="step-info">
+                <div className="step-title">{stepInfo.title}</div>
+                <div className="step-description">{stepInfo.description}</div>
+              </div>
+            </div>
+          ))}
+        </nav>
       </div>
     );
   }, [step]);
 
   // Memoized coverage cards
   const coverageCards = useMemo(() => (
-    <div className="coverage-cards">
+    <div className="coverage-cards" role="radiogroup" aria-label="Coverage Level Selection">
       {COVERAGE_LEVELS.map(level => (
         <div
           key={level.value}
@@ -207,11 +224,22 @@ function FormStep({ onUpdate }) {
           onClick={() => handleChange({
             target: { name: 'coverageLevel', value: level.value }
           })}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleChange({
+                target: { name: 'coverageLevel', value: level.value }
+              });
+            }
+          }}
+          role="radio"
+          aria-checked={formData.coverageLevel === level.value}
+          tabIndex={0}
         >
           <h4>{level.label}</h4>
           <ul>
             {level.features.map((feature, index) => (
-              <li key={index}>{feature}</li>
+              <li key={index} role="presentation">{feature}</li>
             ))}
           </ul>
         </div>
@@ -237,14 +265,14 @@ function FormStep({ onUpdate }) {
   }, [step, formData]);
 
   return (
-    <form className="wes3-form" onSubmit={handleSubmit}>
+    <form className="wes3-form" onSubmit={handleSubmit} role="form" aria-label="Budget Estimation Form">
       {progressBar}
       
       {step === 1 && (
-        <>
-          <h2>Step 1: Contact Information</h2>
+        <div role="tabpanel" aria-labelledby="step-1">
+          <h2 id="step-1">Step 1: Contact Information</h2>
           <div className={`form-group ${getFieldStatus('name')}`}>
-            <label htmlFor="name">Name:*</label>
+            <label htmlFor="name" id="name-label">Name:*</label>
             <input
               type="text"
               name="name"
@@ -254,14 +282,18 @@ function FormStep({ onUpdate }) {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Your full name"
+              aria-labelledby="name-label"
+              aria-required="true"
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
             />
             {errors.name && touched.name && (
-              <div className="error-message">{errors.name}</div>
+              <div className="error-message" id="name-error" role="alert">{errors.name}</div>
             )}
           </div>
 
           <div className={`form-group ${getFieldStatus('companyName')}`}>
-            <label htmlFor="companyName">Company Name:*</label>
+            <label htmlFor="companyName" id="company-label">Company Name:*</label>
             <input
               type="text"
               name="companyName"
@@ -271,14 +303,18 @@ function FormStep({ onUpdate }) {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Your company name"
+              aria-labelledby="company-label"
+              aria-required="true"
+              aria-invalid={!!errors.companyName}
+              aria-describedby={errors.companyName ? "company-error" : undefined}
             />
             {errors.companyName && touched.companyName && (
-              <div className="error-message">{errors.companyName}</div>
+              <div className="error-message" id="company-error" role="alert">{errors.companyName}</div>
             )}
           </div>
 
           <div className={`form-group ${getFieldStatus('email')}`}>
-            <label htmlFor="email">Email:*</label>
+            <label htmlFor="email" id="email-label">Email:*</label>
             <input
               type="email"
               name="email"
@@ -288,14 +324,18 @@ function FormStep({ onUpdate }) {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="your.email@company.com"
+              aria-labelledby="email-label"
+              aria-required="true"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
             {errors.email && touched.email && (
-              <div className="error-message">{errors.email}</div>
+              <div className="error-message" id="email-error" role="alert">{errors.email}</div>
             )}
           </div>
 
           <div className={`form-group ${getFieldStatus('phone')}`}>
-            <label htmlFor="phone">Phone: (Optional)</label>
+            <label htmlFor="phone" id="phone-label">Phone: (Optional)</label>
             <input
               type="tel"
               name="phone"
@@ -304,9 +344,12 @@ function FormStep({ onUpdate }) {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Your contact number"
+              aria-labelledby="phone-label"
+              aria-invalid={!!errors.phone}
+              aria-describedby={errors.phone ? "phone-error" : undefined}
             />
             {errors.phone && touched.phone && (
-              <div className="error-message">{errors.phone}</div>
+              <div className="error-message" id="phone-error" role="alert">{errors.phone}</div>
             )}
           </div>
 
@@ -316,18 +359,19 @@ function FormStep({ onUpdate }) {
               onClick={handleNext}
               className="nav-button next-button"
               disabled={isSubmitting}
+              aria-label="Next Step"
             >
               Next →
             </button>
           </div>
-        </>
+        </div>
       )}
 
       {step === 2 && (
-        <>
-          <h2>Step 2: Basic Site Information</h2>
+        <div role="tabpanel" aria-labelledby="step-2">
+          <h2 id="step-2">Step 2: Basic Site Information</h2>
           <div className={`form-group ${getFieldStatus('siteSize')}`}>
-            <label htmlFor="siteSize">Site Size (sq. ft):</label>
+            <label htmlFor="siteSize" id="siteSize-label">Site Size (sq. ft):*</label>
             <input
               type="number"
               name="siteSize"
@@ -337,17 +381,20 @@ function FormStep({ onUpdate }) {
               value={formData.siteSize}
               onChange={handleChange}
               onBlur={handleBlur}
-              data-tooltip-id="tooltip-siteSize"
-              data-tooltip-content="Enter the total square footage of your site"
+              min="1"
+              aria-labelledby="siteSize-label"
+              aria-required="true"
+              aria-invalid={!!errors.siteSize}
+              aria-describedby={`tooltip-siteSize${errors.siteSize ? " siteSize-error" : ""}`}
             />
             {errors.siteSize && touched.siteSize && (
-              <div className="error-message">{errors.siteSize}</div>
+              <div className="error-message" id="siteSize-error" role="alert">{errors.siteSize}</div>
             )}
             <Tooltip id="tooltip-siteSize" />
           </div>
 
           <div className={`form-group ${getFieldStatus('floors')}`}>
-            <label htmlFor="floors">Number of Floors:</label>
+            <label htmlFor="floors" id="floors-label">Number of Floors:*</label>
             <input
               type="number"
               name="floors"
@@ -356,17 +403,20 @@ function FormStep({ onUpdate }) {
               value={formData.floors}
               onChange={handleChange}
               onBlur={handleBlur}
-              data-tooltip-id="tooltip-floors"
-              data-tooltip-content="Enter the number of floors, including basements."
+              min="1"
+              aria-labelledby="floors-label"
+              aria-required="true"
+              aria-invalid={!!errors.floors}
+              aria-describedby={`tooltip-floors${errors.floors ? " floors-error" : ""}`}
             />
             {errors.floors && touched.floors && (
-              <div className="error-message">{errors.floors}</div>
+              <div className="error-message" id="floors-error" role="alert">{errors.floors}</div>
             )}
             <Tooltip id="tooltip-floors" />
           </div>
 
           <div className={`form-group ${getFieldStatus('stairs')}`}>
-            <label htmlFor="stairs">Number of Staircases:</label>
+            <label htmlFor="stairs" id="stairs-label">Number of Staircases:*</label>
             <input
               type="number"
               name="stairs"
@@ -375,17 +425,20 @@ function FormStep({ onUpdate }) {
               value={formData.stairs}
               onChange={handleChange}
               onBlur={handleBlur}
-              data-tooltip-id="tooltip-stairs"
-              data-tooltip-content="Provide the total number of staircases in the building."
+              min="1"
+              aria-labelledby="stairs-label"
+              aria-required="true"
+              aria-invalid={!!errors.stairs}
+              aria-describedby={`tooltip-stairs${errors.stairs ? " stairs-error" : ""}`}
             />
             {errors.stairs && touched.stairs && (
-              <div className="error-message">{errors.stairs}</div>
+              <div className="error-message" id="stairs-error" role="alert">{errors.stairs}</div>
             )}
             <Tooltip id="tooltip-stairs" />
           </div>
 
           <div className={`form-group ${getFieldStatus('constructionType')}`}>
-            <label htmlFor="constructionType">Type of Construction:</label>
+            <label htmlFor="constructionType" id="constructionType-label">Type of Construction:*</label>
             <select
               name="constructionType"
               id="constructionType"
@@ -393,8 +446,10 @@ function FormStep({ onUpdate }) {
               value={formData.constructionType}
               onChange={handleChange}
               onBlur={handleBlur}
-              data-tooltip-id="tooltip-constructionType"
-              data-tooltip-content="Select the type of construction: Residential, Commercial, Industrial, or Marine."
+              aria-labelledby="constructionType-label"
+              aria-required="true"
+              aria-invalid={!!errors.constructionType}
+              aria-describedby={`tooltip-constructionType${errors.constructionType ? " constructionType-error" : ""}`}
             >
               <option value="">Select Type</option>
               {CONSTRUCTION_TYPES.map(type => (
@@ -402,13 +457,13 @@ function FormStep({ onUpdate }) {
               ))}
             </select>
             {errors.constructionType && touched.constructionType && (
-              <div className="error-message">{errors.constructionType}</div>
+              <div className="error-message" id="constructionType-error" role="alert">{errors.constructionType}</div>
             )}
             <Tooltip id="tooltip-constructionType" />
           </div>
 
           <div className={`form-group ${getFieldStatus('constructionPhase')}`}>
-            <label htmlFor="constructionPhase">Phase of Construction:</label>
+            <label htmlFor="constructionPhase" id="constructionPhase-label">Phase of Construction:*</label>
             <select
               name="constructionPhase"
               id="constructionPhase"
@@ -416,8 +471,10 @@ function FormStep({ onUpdate }) {
               value={formData.constructionPhase}
               onChange={handleChange}
               onBlur={handleBlur}
-              data-tooltip-id="tooltip-constructionPhase"
-              data-tooltip-content="Choose the phase of construction: Early Planning, Mid-Construction, or Finishing Phase."
+              aria-labelledby="constructionPhase-label"
+              aria-required="true"
+              aria-invalid={!!errors.constructionPhase}
+              aria-describedby={`tooltip-constructionPhase${errors.constructionPhase ? " constructionPhase-error" : ""}`}
             >
               <option value="">Select Phase</option>
               {CONSTRUCTION_PHASES.map(phase => (
@@ -425,14 +482,14 @@ function FormStep({ onUpdate }) {
               ))}
             </select>
             {errors.constructionPhase && touched.constructionPhase && (
-              <div className="error-message">{errors.constructionPhase}</div>
+              <div className="error-message" id="constructionPhase-error" role="alert">{errors.constructionPhase}</div>
             )}
             <Tooltip id="tooltip-constructionPhase" />
           </div>
 
           <div className="form-group">
-            <label htmlFor="coverageLevel">Coverage Level:</label>
-            <div className="coverage-comparison">
+            <label id="coverageLevel-label">Coverage Level:*</label>
+            <div className="coverage-comparison" role="group" aria-labelledby="coverageLevel-label">
               {coverageCards}
             </div>
           </div>
@@ -443,6 +500,7 @@ function FormStep({ onUpdate }) {
               onClick={handlePrevious}
               className="nav-button prev-button"
               disabled={isSubmitting}
+              aria-label="Previous Step"
             >
               ← Previous
             </button>
@@ -451,18 +509,19 @@ function FormStep({ onUpdate }) {
               onClick={handleNext}
               className="nav-button next-button"
               disabled={isSubmitting}
+              aria-label="Next Step"
             >
               Next →
             </button>
           </div>
-        </>
+        </div>
       )}
 
       {step === 3 && (
-        <>
-          <h2>Step 3: System Requirements</h2>
-          <div className="highlight-section">
-            <div className="highlight-card">
+        <div role="tabpanel" aria-labelledby="step-3">
+          <h2 id="step-3">Step 3: System Requirements</h2>
+          <div className="highlight-section" role="group" aria-label="System Features">
+            <div className="highlight-card" role="region" aria-label="Interface Device Features">
               <h3>Interface Device</h3>
               <ul>
                 <li>Seamless integration with fire panels</li>
@@ -470,7 +529,7 @@ function FormStep({ onUpdate }) {
                 <li>Flexible configuration options</li>
               </ul>
             </div>
-            <div className="highlight-card">
+            <div className="highlight-card" role="region" aria-label="REACT Digital App Features">
               <h3>REACT Digital App</h3>
               <ul>
                 <li>Real-time monitoring and notifications</li>
@@ -480,38 +539,35 @@ function FormStep({ onUpdate }) {
             </div>
           </div>
 
-          <div className={`form-group ${getFieldStatus('interfaceIntegration')}`}>
-            <label>
+          <div className={`form-group checkbox-group ${getFieldStatus('interfaceIntegration')}`}>
+            <label htmlFor="interfaceIntegration" id="interfaceIntegration-label" className="checkbox-label">
               <input
                 type="checkbox"
                 name="interfaceIntegration"
+                id="interfaceIntegration"
                 checked={formData.interfaceIntegration}
                 onChange={handleChange}
+                aria-labelledby="interfaceIntegration-label"
+                aria-describedby="tooltip-interfaceIntegration"
               />
               Interface Integration
-              <span
-                data-tooltip-id="tooltip-interfaceIntegration"
-                data-tooltip-content="Enable this if you want to integrate with other fire panels or alarm systems."
-              >
-                ?
-              </span>
             </label>
-            {errors.interfaceIntegration && touched.interfaceIntegration && (
-              <div className="error-message">{errors.interfaceIntegration}</div>
-            )}
+            <span
+              className="tooltip-trigger"
+              data-tooltip-id="tooltip-interfaceIntegration"
+              data-tooltip-content="Enable this if you want to integrate with other fire panels or alarm systems."
+              role="tooltip"
+              tabIndex="0"
+            >
+              ?
+            </span>
             <Tooltip id="tooltip-interfaceIntegration" />
           </div>
 
           {formData.interfaceIntegration && (
             <div className={`form-group ${getFieldStatus('interfaceDetails')}`}>
-              <label htmlFor="interfaceDetails">
+              <label htmlFor="interfaceDetails" id="interfaceDetails-label">
                 Describe Your Implementation Idea:
-                <span
-                  data-tooltip-id="tooltip-interfaceDetails"
-                  data-tooltip-content="Provide details about how you plan to use the interface device."
-                >
-                  ?
-                </span>
               </label>
               <textarea
                 name="interfaceDetails"
@@ -521,33 +577,37 @@ function FormStep({ onUpdate }) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="Describe how you plan to integrate the interface unit"
+                aria-labelledby="interfaceDetails-label"
+                aria-describedby={errors.interfaceDetails ? "interfaceDetails-error" : undefined}
               ></textarea>
               {errors.interfaceDetails && touched.interfaceDetails && (
-                <div className="error-message">{errors.interfaceDetails}</div>
+                <div className="error-message" id="interfaceDetails-error" role="alert">{errors.interfaceDetails}</div>
               )}
-              <Tooltip id="tooltip-interfaceDetails" />
             </div>
           )}
 
-          <div className={`form-group ${getFieldStatus('reactIntegration')}`}>
-            <label>
+          <div className={`form-group checkbox-group ${getFieldStatus('reactIntegration')}`}>
+            <label htmlFor="reactIntegration" id="reactIntegration-label" className="checkbox-label">
               <input
                 type="checkbox"
                 name="reactIntegration"
+                id="reactIntegration"
                 checked={formData.reactIntegration}
                 onChange={handleChange}
+                aria-labelledby="reactIntegration-label"
+                aria-describedby="tooltip-reactIntegration"
               />
               REACT Integration
-              <span
-                data-tooltip-id="tooltip-reactIntegration"
-                data-tooltip-content="Enable REACT integration for remote monitoring and notifications."
-              >
-                ?
-              </span>
             </label>
-            {errors.reactIntegration && touched.reactIntegration && (
-              <div className="error-message">{errors.reactIntegration}</div>
-            )}
+            <span
+              className="tooltip-trigger"
+              data-tooltip-id="tooltip-reactIntegration"
+              data-tooltip-content="Enable REACT integration for remote monitoring and notifications."
+              role="tooltip"
+              tabIndex="0"
+            >
+              ?
+            </span>
             <Tooltip id="tooltip-reactIntegration" />
           </div>
 
@@ -557,6 +617,7 @@ function FormStep({ onUpdate }) {
               onClick={handlePrevious}
               className="nav-button prev-button"
               disabled={isSubmitting}
+              aria-label="Previous Step"
             >
               ← Previous
             </button>
@@ -565,44 +626,83 @@ function FormStep({ onUpdate }) {
               onClick={handleNext}
               className="nav-button next-button"
               disabled={isSubmitting}
+              aria-label="Next Step"
             >
               Next →
             </button>
           </div>
-        </>
+        </div>
       )}
 
       {step === 4 && (
-        <>
-          <h2>Step 4: Review & Submit</h2>
-          <p style={{ color: "#333" }}>Review your inputs before submitting:</p>
+        <div role="tabpanel" aria-labelledby="step-4">
+          <h2 id="step-4">Step 4: Review & Submit</h2>
+          <p>Review your inputs before submitting:</p>
           
-          <div className="review-section">
+          <div className="review-section" role="region" aria-label="Form Summary">
             <h3>Contact Information</h3>
-            <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
-              <li>Name: {formData.name}</li>
-              <li>Company: {formData.companyName}</li>
-              <li>Email: {formData.email}</li>
-              {formData.phone && <li>Phone: {formData.phone}</li>}
-            </ul>
+            <dl className="review-list">
+              <div className="review-item">
+                <dt>Name:</dt>
+                <dd>{formData.name}</dd>
+              </div>
+              <div className="review-item">
+                <dt>Company:</dt>
+                <dd>{formData.companyName}</dd>
+              </div>
+              <div className="review-item">
+                <dt>Email:</dt>
+                <dd>{formData.email}</dd>
+              </div>
+              {formData.phone && (
+                <div className="review-item">
+                  <dt>Phone:</dt>
+                  <dd>{formData.phone}</dd>
+                </div>
+              )}
+            </dl>
 
             <h3>Site Details</h3>
-            <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
-              <li>Site Size: {formData.siteSize} sq. ft</li>
-              <li>Floors: {formData.floors}</li>
-              <li>Staircases: {formData.stairs}</li>
-              <li>Construction Type: {formData.constructionType}</li>
-              <li>Construction Phase: {formData.constructionPhase}</li>
-            </ul>
+            <dl className="review-list">
+              <div className="review-item">
+                <dt>Site Size:</dt>
+                <dd>{formData.siteSize} sq. ft</dd>
+              </div>
+              <div className="review-item">
+                <dt>Floors:</dt>
+                <dd>{formData.floors}</dd>
+              </div>
+              <div className="review-item">
+                <dt>Staircases:</dt>
+                <dd>{formData.stairs}</dd>
+              </div>
+              <div className="review-item">
+                <dt>Construction Type:</dt>
+                <dd>{CONSTRUCTION_TYPES.find(type => type.value === formData.constructionType)?.label || formData.constructionType}</dd>
+              </div>
+              <div className="review-item">
+                <dt>Construction Phase:</dt>
+                <dd>{CONSTRUCTION_PHASES.find(phase => phase.value === formData.constructionPhase)?.label || formData.constructionPhase}</dd>
+              </div>
+            </dl>
 
             <h3>System Requirements</h3>
-            <ul style={{ color: "#333", listStyleType: "none", padding: 0 }}>
-              <li>Interface Integration: {formData.interfaceIntegration ? 'Yes' : 'No'}</li>
+            <dl className="review-list">
+              <div className="review-item">
+                <dt>Interface Integration:</dt>
+                <dd>{formData.interfaceIntegration ? 'Yes' : 'No'}</dd>
+              </div>
               {formData.interfaceIntegration && (
-                <li>Interface Details: {formData.interfaceDetails}</li>
+                <div className="review-item">
+                  <dt>Interface Details:</dt>
+                  <dd>{formData.interfaceDetails}</dd>
+                </div>
               )}
-              <li>REACT Integration: {formData.reactIntegration ? 'Yes' : 'No'}</li>
-            </ul>
+              <div className="review-item">
+                <dt>REACT Integration:</dt>
+                <dd>{formData.reactIntegration ? 'Yes' : 'No'}</dd>
+              </div>
+            </dl>
           </div>
 
           <div className="form-navigation">
@@ -611,6 +711,7 @@ function FormStep({ onUpdate }) {
               onClick={handlePrevious}
               className="nav-button prev-button"
               disabled={isSubmitting}
+              aria-label="Previous Step"
             >
               ← Previous
             </button>
@@ -618,11 +719,12 @@ function FormStep({ onUpdate }) {
               type="submit" 
               className={`nav-button submit-button ${isSubmitting ? 'loading' : ''}`}
               disabled={isSubmitting}
+              aria-label={isSubmitting ? 'Calculating estimate...' : 'Calculate Estimate'}
             >
               {isSubmitting ? 'Calculating...' : 'Calculate Estimate'}
             </button>
           </div>
-        </>
+        </div>
       )}
     </form>
   );

@@ -11,49 +11,110 @@
 /* Progress Bar Styles */
 .progress-container {
   margin: 0 0 3rem;
-  padding: 1rem;
+  padding: 1.5rem;
   position: relative;
-  background: #f8f9fa;
+  background: white;
   border-radius: 8px;
 }
 
+.progress-track {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin: 2rem 0;
+  position: relative;
+}
+
 .progress-bar {
-  height: 6px;
-  background: linear-gradient(90deg, #4CAF50, #2196F3);
-  transition: width 0.5s ease;
-  border-radius: 3px;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #2196F3;
+  transition: width 0.3s ease;
+  border-radius: 2px;
 }
 
 .steps-indicator {
   display: flex;
   justify-content: space-between;
-  margin-top: -3px;
-  padding: 0 20px;
-}
-
-.step-dot {
-  width: 16px;
-  height: 16px;
-  background: #e0e0e0;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  cursor: pointer;
   position: relative;
+  margin-top: -2.5rem;
 }
 
-.step-dot.active {
-  background: #4CAF50;
-  transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+.step-item {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  flex: 1;
 }
 
-.step-text {
-  text-align: center;
-  margin-top: 12px;
+.step-number {
+  width: 28px;
+  height: 28px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
   color: #666;
-  font-size: 14px;
-  font-weight: 500;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.step-info {
+  text-align: center;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.step-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0.2rem;
+}
+
+.step-description {
+  font-size: 0.8rem;
+  color: #666;
+  display: none;
+}
+
+/* Active and Completed States */
+.step-item.active .step-number {
+  background: #2196F3;
+  border-color: #2196F3;
+  color: white;
+}
+
+.step-item.active .step-info {
+  opacity: 1;
+}
+
+.step-item.active .step-description {
+  display: block;
+}
+
+.step-item.completed .step-number {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  color: white;
+}
+
+.step-item.completed .step-number::after {
+  content: '✓';
+  font-size: 0.8rem;
+}
+
+.step-item.completed .step-info {
+  opacity: 0.7;
 }
 
 /* Form Groups */
@@ -239,20 +300,115 @@
 
 .review-section h3 {
   color: #2196F3;
-  margin-bottom: 1rem;
+  margin: 1.5rem 0 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #e0e0e0;
 }
 
-.review-section ul {
-  margin-bottom: 2rem;
+.review-section h3:first-child {
+  margin-top: 0;
 }
 
-.review-section li {
-  padding: 0.5rem 0;
+.review-list {
+  margin: 0;
+  padding: 0;
+}
+
+.review-item {
   display: flex;
-  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+.review-item dt {
+  flex: 0 0 200px;
+  font-weight: 500;
+  color: #666;
+}
+
+.review-item dd {
+  flex: 1;
+  margin: 0;
+  color: #333;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  display: flex;
   align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0 !important;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+
+.tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: help;
+}
+
+.tooltip-trigger:hover,
+.tooltip-trigger:focus {
+  background: #e0e0e0;
+  color: #333;
+}
+
+/* Required Field Indicator */
+label[aria-required="true"]::after,
+legend[aria-required="true"]::after {
+  content: "*";
+  color: #d32f2f;
+  margin-left: 4px;
+}
+
+/* Focus Improvements */
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.form-group textarea:focus-visible,
+.checkbox-group input:focus-visible,
+.tooltip-trigger:focus-visible {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Mobile Improvements */
+@media (max-width: 768px) {
+  .review-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .review-item dt {
+    flex: none;
+  }
+
+  .checkbox-group {
+    flex-wrap: wrap;
+  }
 }
 
 /* Animations */
@@ -301,6 +457,28 @@
   .nav-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .progress-container {
+    padding: 1rem;
+  }
+
+  .steps-indicator {
+    margin-top: -2rem;
+  }
+
+  .step-title {
+    font-size: 0.8rem;
+  }
+
+  .step-description {
+    display: none;
+  }
+
+  .step-number {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
   }
 }
 
@@ -368,4 +546,178 @@
 @keyframes spin {
   0% { transform: translate(-50%, -50%) rotate(0deg); }
   100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .wes3-form {
+    background: white;
+    border: 2px solid black;
+  }
+
+  .form-group label {
+    color: black;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    border: 2px solid black;
+    background: white;
+    color: black;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: 3px solid black;
+    outline-offset: 2px;
+  }
+
+  .progress-bar {
+    background: black;
+  }
+
+  .step-number {
+    border: 2px solid black;
+    color: black;
+  }
+
+  .step-item.active .step-number {
+    background: black;
+    color: white;
+  }
+
+  .step-item.completed .step-number {
+    background: black;
+    color: white;
+  }
+
+  .coverage-card {
+    border: 2px solid black;
+  }
+
+  .coverage-card.selected {
+    background: black;
+    color: white;
+  }
+
+  .coverage-card.selected h4,
+  .coverage-card.selected li {
+    color: white;
+  }
+
+  .nav-button {
+    border: 2px solid black;
+  }
+
+  .next-button,
+  .submit-button {
+    background: black;
+    color: white;
+  }
+
+  .prev-button {
+    background: white;
+    color: black;
+  }
+
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+}
+
+/* Skip Navigation for Keyboard Users */
+.skip-nav {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #2196F3;
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-nav:focus {
+  top: 0;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .progress-bar {
+    transition: none !important;
+  }
+}
+
+/* Better Focus Visibility */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Improved Color Contrast */
+.step-title {
+  color: #000;
+}
+
+.step-description {
+  color: #333;
+}
+
+.coverage-card li {
+  color: #333;
+}
+
+/* Screen Reader Only Text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Error States with Better Contrast */
+.form-group.error input,
+.form-group.error select {
+  border-color: #d32f2f;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* Focus Within States */
+.form-group:focus-within label {
+  color: #2196F3;
+}
+
+/* Keyboard Navigation Improvements */
+.coverage-card:focus-within {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+}
+
+.nav-button:focus {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Large Click Targets */
+.form-group label,
+.nav-button,
+.coverage-card {
+  min-height: 44px;
 } 
