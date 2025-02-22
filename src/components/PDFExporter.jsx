@@ -27,9 +27,6 @@ class PDFExporter {
       // Add device quantities table
       this.addDeviceTable();
       
-      // Add cost breakdown
-      this.addCostBreakdown();
-      
       // Add coverage details
       this.addCoverageDetails();
       
@@ -141,42 +138,6 @@ class PDFExporter {
     this.currentY = this.doc.lastAutoTable.finalY + 10;
   }
 
-  addCostBreakdown() {
-    this.doc.setFontSize(14);
-    this.doc.text('Cost Breakdown', this.margin, this.currentY);
-    this.currentY += 10;
-
-    const formatCurrency = (amount) => `$${amount.toLocaleString()}`;
-
-    const costData = [
-      ['Item', 'Cost'],
-      ['Smoke Detectors', formatCurrency(this.data.costs.smokeDetectors)],
-      ['Heat Detectors', formatCurrency(this.data.costs.heatDetectors)],
-      ['Call Points', formatCurrency(this.data.costs.callPoints)],
-      ['Interface Units', formatCurrency(this.data.costs.interfaceUnits)],
-      ['Installation', formatCurrency(this.data.costs.installation)],
-      ['Annual Maintenance', formatCurrency(this.data.costs.maintenance)]
-    ];
-
-    if (this.data.costs.reactSubscription > 0) {
-      costData.push(['REACT Subscription (Annual)', formatCurrency(this.data.costs.reactSubscription)]);
-    }
-
-    costData.push(['Total', formatCurrency(this.data.costs.total)]);
-
-    this.doc.autoTable({
-      startY: this.currentY,
-      head: [costData[0]],
-      body: costData.slice(1),
-      theme: 'striped',
-      margin: { left: this.margin },
-      styles: { fontSize: 10 },
-      footStyles: { fillColor: [220, 220, 220] }
-    });
-
-    this.currentY = this.doc.lastAutoTable.finalY + 10;
-  }
-
   addCoverageDetails() {
     this.doc.setFontSize(14);
     this.doc.text('Coverage Details', this.margin, this.currentY);
@@ -262,11 +223,10 @@ class PDFExporter {
 
     const terms = [
       '1. This estimate is valid for 30 days from the generation date.',
-      '2. Final costs may vary based on site survey and specific requirements.',
-      '3. Installation costs are estimated at 30% of hardware costs.',
-      '4. Annual maintenance costs are estimated at 15% of hardware costs.',
-      '5. All prices are subject to applicable taxes and fees.',
-      '6. REACT subscription is billed annually if selected.'
+      '2. Final specifications may vary based on site survey and specific requirements.',
+      '3. Device quantities are calculated based on site size and coverage requirements.',
+      '4. Additional devices may be required based on site assessment.',
+      '5. REACT integration features require an active subscription.'
     ];
 
     this.doc.setFontSize(8);

@@ -191,16 +191,6 @@ function BudgetTool() {
             )}
           </div>
 
-          <div className="cost-breakdown">
-            <h3>Cost Breakdown</h3>
-            <p>Hardware Total: <strong>${data.costs?.total.toLocaleString()}</strong></p>
-            <p>Installation: <strong>${data.costs?.installation.toLocaleString()}</strong></p>
-            <p>Annual Maintenance: <strong>${data.costs?.maintenance.toLocaleString()}</strong></p>
-            {data.reactIntegration && (
-              <p>REACT Subscription: <strong>${data.costs?.reactSubscription.toLocaleString()}/year</strong></p>
-            )}
-          </div>
-
           <div className="chart-section">
             <Chart data={data} />
           </div>
