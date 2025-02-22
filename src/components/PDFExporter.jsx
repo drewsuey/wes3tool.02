@@ -48,23 +48,31 @@ class PDFExporter {
   }
 
   addHeader() {
-    // Add Ramtech logo
+    // Add Ramtech logo in top left
     const logoWidth = 40;
     const logoHeight = 15;
-    this.doc.addImage('/public/logo.jpg', 'JPEG', this.margin, this.currentY, logoWidth, logoHeight);
+    this.doc.addImage('logo.jpg', 'JPEG', this.margin, this.currentY, logoWidth, logoHeight);
     
+    // Add ramtechglobal.com in top right
+    this.doc.setFontSize(10);
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
+    this.doc.text('RAMTECHGLOBAL.COM', this.pageWidth - this.margin, this.currentY + 5, { align: 'right' });
+    
+    this.currentY += 30;
+    
+    // Add title
     const title = 'WES3 Fire Safety System Device Estimate';
     const date = new Date().toLocaleDateString();
     
     this.doc.setFontSize(20);
     this.doc.setTextColor(255, 69, 0); // Ramtech orange
-    this.doc.text(title, this.margin + logoWidth + 10, this.currentY + 10);
+    this.doc.text(title, this.pageWidth / 2, this.currentY, { align: 'center' });
     
     this.doc.setFontSize(10);
     this.doc.setTextColor(0, 0, 0); // Reset to black
-    this.doc.text(`Generated: ${date}`, this.pageWidth - this.margin, this.currentY + 10, { align: 'right' });
+    this.doc.text(`Generated: ${date}`, this.pageWidth - this.margin, this.currentY, { align: 'right' });
     
-    this.currentY += 30;
+    this.currentY += 20;
   }
 
   addCustomerInfo() {
@@ -304,22 +312,51 @@ class PDFExporter {
         this.doc.addPage();
         this.currentY = this.margin;
       }
-      this.doc.text(term, this.margin, this.currentY);
+    this.doc.text(term, this.margin, this.currentY);
       this.currentY += 10;
     });
+
+    // Add contact email
+    this.currentY += 10;
+    this.doc.setFontSize(8);
+    this.doc.text('If you have any questions about this, please contact react@ramtechglobal.com', this.margin, this.currentY);
   }
 
   addFooter() {
     const pageCount = this.doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       this.doc.setPage(i);
+      
+      // Add page numbers in center
       this.doc.setFontSize(8);
       this.doc.text(
         `Page ${i} of ${pageCount}`,
         this.pageWidth / 2,
-        this.pageHeight - 10,
+        this.pageHeight - 20,
         { align: 'center' }
       );
+      
+      // Add Orama and Halma logos in bottom right
+      const oramaWidth = 25;
+      const oramaHeight = 10;
+      const halmaWidth = 25;
+      const halmaHeight = 10;
+      const spacing = 5;
+      
+      // Position logos side by side in bottom right
+      // Orama logo (orange wave symbol)
+      const oramaLogo = 'data:image/jpeg;base64,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';
+      this.doc.addImage(oramaLogo, 'JPEG', 
+        this.pageWidth - this.margin - halmaWidth - spacing - oramaWidth,
+        this.pageHeight - 25,
+        oramaWidth, oramaHeight);
+      
+      // Halma logo (green circle with text)
+      const halmaLogo = 'data:image/jpeg;base64,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';
+      this.doc.addImage(halmaLogo, 'JPEG',
+        this.pageWidth - this.margin - halmaWidth,
+        this.pageHeight - 25,
+        halmaWidth, halmaHeight);
     }
   }
 }
