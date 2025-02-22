@@ -1,107 +1,139 @@
 // src/pages/BudgetTool.jsx
-import React, { useState, useCallback, useMemo } from 'react';
-import jsPDF from 'jspdf'; // IMPORTANT: import jsPDF for handleDownloadPDF
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import FormStep from '../components/FormStep';
 import Chart from '../components/Chart';
+import PDFExporter from '../components/PDFExporter';
+import { generateEstimate } from '../utils/calculations';
 import '../App.css';
 
-// Constants for calculations
-const SPACING_MULTIPLIERS = {
-  max: 1,      // Standard spacing
-  medium: 1.25, // 25% increased spacing
-  low: 1.5     // 50% increased spacing
-};
+// Error boundary component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
 
-const BASE_COVERAGE_RADIUS = 25; // Base radius in feet
-const SMOKE_DETECTOR_RATIO = 0.9;
-const HEAT_DETECTOR_RATIO = 0.1;
-const REACT_SUBSCRIPTION_COST = 2500;
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('BudgetTool Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container">
+          <h2>Something went wrong</h2>
+          <p>We're sorry, but there was an error processing your request.</p>
+          <button onClick={() => window.location.reload()}>
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 function BudgetTool() {
   const [data, setData] = useState({});
-  const [formSubmitted, setFormSubmitted] = useState(false); // Track if the form is submitted
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [lastSaved, setLastSaved] = useState(null);
 
-  // For "Request a Quote" form toggle
-  const [showQuoteForm, setShowQuoteForm] = useState(false);
-
-  // Memoized calculation functions
-  const calculateDeviceCoverage = useCallback((spacing) => {
-    return Math.PI * Math.pow(BASE_COVERAGE_RADIUS * spacing, 2);
+  // Load saved form state on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('wes3FormState');
+    if (savedState) {
+      try {
+        const { data, timestamp } = JSON.parse(savedState);
+        const now = Date.now();
+        // Check if saved state is less than 24 hours old
+        if (now - timestamp < 24 * 60 * 60 * 1000) {
+          setData(data);
+          setLastSaved(new Date(timestamp));
+        } else {
+          localStorage.removeItem('wes3FormState');
+        }
+      } catch (error) {
+        console.error('Error loading saved state:', error);
+      }
+    }
   }, []);
 
-  const calculateDetectors = useCallback((sqFt, spacing) => {
-    const coverage = calculateDeviceCoverage(spacing);
-    const total = Math.ceil(sqFt / coverage);
-    return {
-      smoke: Math.ceil(total * SMOKE_DETECTOR_RATIO),
-      heat: Math.ceil(total * HEAT_DETECTOR_RATIO)
-    };
-  }, [calculateDeviceCoverage]);
-
   // Memoized data update handler
-  const handleDataUpdate = useCallback((newData) => {
-    const sqFt = parseInt(newData.siteSize || 0, 10);
-    const floors = parseInt(newData.floors || 0, 10);
-    const stairs = parseInt(newData.stairs || 0, 10);
-
-    const spacingMultiplier = SPACING_MULTIPLIERS[newData.coverageLevel] || SPACING_MULTIPLIERS.max;
-    const { smoke: smokeDetectors, heat: heatDetectors } = calculateDetectors(sqFt, spacingMultiplier);
+  const handleDataUpdate = useCallback(async (newData) => {
+    setIsLoading(true);
+    setError(null);
     
-    const callPoints = floors * stairs;
-    const interfaceUnitCount = newData.interfaceIntegration ? 1 : 0;
-    const reactAnnualCost = newData.reactIntegration ? REACT_SUBSCRIPTION_COST : 0;
+    try {
+      const estimate = generateEstimate(newData);
+      const updatedData = {
+        ...newData,
+        ...estimate
+      };
+      
+      setData(updatedData);
+      setFormSubmitted(true);
+      
+      // Save form state
+      localStorage.setItem('wes3FormState', JSON.stringify({
+        data: updatedData,
+        timestamp: Date.now()
+      }));
+      
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Error generating estimate:', error);
+      setError('Failed to generate estimate. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    const totalDevices = smokeDetectors + heatDetectors + callPoints + interfaceUnitCount;
-
-    setData({
-      ...newData,
-      smokeDetectors,
-      heatDetectors,
-      callPoints,
-      interfaceUnitCount,
-      totalDevices,
-      reactAnnualCost,
-      spacingMultiplier,
-    });
-
-    setFormSubmitted(true);
-  }, [calculateDetectors]);
-
-  // Memoized handlers
+  // Enhanced handlers with error handling
   const handleReset = useCallback(() => {
-    setFormSubmitted(false);
-    setData({});
+    try {
+      localStorage.removeItem('wes3FormState');
+      setFormSubmitted(false);
+      setData({});
+      setError(null);
+      setLastSaved(null);
+    } catch (error) {
+      console.error('Error resetting form:', error);
+      setError('Failed to reset form. Please refresh the page.');
+    }
   }, []);
 
   const handlePrint = useCallback(() => {
-    window.print();
+    try {
+      window.print();
+    } catch (error) {
+      console.error('Error printing:', error);
+      setError('Failed to print. Please try again.');
+    }
   }, []);
 
-  const handleDownloadPDF = useCallback(() => {
-    const doc = new jsPDF();
-    
-    // Memoized PDF content generation
-    const content = [
-      { text: 'WES3 Budget Estimate', y: 10 },
-      { text: `Smoke Detectors: ${data.smokeDetectors || 0}`, y: 20 },
-      { text: `Heat Detectors: ${data.heatDetectors || 0}`, y: 30 },
-      { text: `Call Points: ${data.callPoints || 0}`, y: 40 },
-      { text: `Total Devices: ${data.totalDevices || 0}`, y: 50 }
-    ];
-
-    if (data.reactIntegration) {
-      content.push({
-        text: `REACT Subscription: $${data.reactAnnualCost || 0}/year`,
-        y: 60
-      });
+  const handleDownloadPDF = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const exporter = new PDFExporter(data);
+      await exporter.generatePDF();
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      setError('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-
-    content.forEach(({ text, y }) => doc.text(text, 10, y));
-    doc.save('WES3-Budget-Estimate.pdf');
   }, [data]);
 
   const handleEmail = useCallback(async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('http://localhost:3001/api/send-estimate', {
         method: 'POST',
         headers: {
@@ -118,74 +150,115 @@ function BudgetTool() {
       alert('Estimate sent successfully to our sales team!');
     } catch (error) {
       console.error('Error sending estimate:', error);
-      alert('Failed to send estimate. Please try again later.');
+      setError('Failed to send estimate. Please try again later.');
+    } finally {
+      setIsLoading(false);
     }
   }, [data]);
 
-  // Memoized result content
+  // Memoized result content with loading and error states
   const estimateResult = useMemo(() => (
     <div className="estimate-result">
-      <h2>Device Estimate</h2>
-      <div className="contact-info">
-        <h3>Contact Information</h3>
-        <p style={{ color: "#333" }}>Name: <strong>{data.name}</strong></p>
-        <p style={{ color: "#333" }}>Company: <strong>{data.companyName}</strong></p>
-        <p style={{ color: "#333" }}>Email: <strong>{data.email}</strong></p>
-        {data.phone && <p style={{ color: "#333" }}>Phone: <strong>{data.phone}</strong></p>}
-      </div>
-      
-      <div className="device-counts">
-        <p style={{ color: "#333" }}>
-          Smoke Detectors Needed: <strong>{data.smokeDetectors}</strong>
-        </p>
-        <p style={{ color: "#333" }}>
-          Heat Detectors Needed: <strong>{data.heatDetectors}</strong>
-        </p>
-        <p style={{ color: "#333" }}>
-          Call Points Needed: <strong>{data.callPoints}</strong>
-        </p>
-        {data.interfaceIntegration && (
-          <p style={{ color: "#333" }}>
-            Interface Unit: <strong>{data.interfaceUnitCount}</strong>
-          </p>
-        )}
-        <p style={{ color: "#333" }}>
-          Total Devices: <strong>{data.totalDevices}</strong>
-        </p>
-        {data.reactIntegration && (
-          <p style={{ color: "#333" }}>
-            REACT Subscription: <strong>${data.reactAnnualCost}/year</strong>
-          </p>
-        )}
-      </div>
+      {error ? (
+        <div className="error-message" role="alert">
+          <h3>Error</h3>
+          <p>{error}</p>
+          <button onClick={handleReset}>Try Again</button>
+        </div>
+      ) : (
+        <>
+          <h2>Device Estimate</h2>
+          {lastSaved && (
+            <p className="last-saved">
+              Last saved: {lastSaved.toLocaleString()}
+            </p>
+          )}
+          <div className="contact-info">
+            <h3>Contact Information</h3>
+            <p>Name: <strong>{data.name}</strong></p>
+            <p>Company: <strong>{data.companyName}</strong></p>
+            <p>Email: <strong>{data.email}</strong></p>
+            {data.phone && <p>Phone: <strong>{data.phone}</strong></p>}
+          </div>
+          
+          <div className="device-counts">
+            <h3>Required Devices</h3>
+            <p>Smoke Detectors: <strong>{data.deviceCounts?.smoke}</strong></p>
+            <p>Heat Detectors: <strong>{data.deviceCounts?.heat}</strong></p>
+            <p>Call Points: <strong>{data.deviceCounts?.callPoints}</strong></p>
+            {data.interfaceIntegration && (
+              <p>Interface Units: <strong>{data.deviceCounts?.interfaceUnits}</strong></p>
+            )}
+          </div>
 
-      <div className="chart-section">
-        <Chart data={data} />
-      </div>
+          <div className="cost-breakdown">
+            <h3>Cost Breakdown</h3>
+            <p>Hardware Total: <strong>${data.costs?.total.toLocaleString()}</strong></p>
+            <p>Installation: <strong>${data.costs?.installation.toLocaleString()}</strong></p>
+            <p>Annual Maintenance: <strong>${data.costs?.maintenance.toLocaleString()}</strong></p>
+            {data.reactIntegration && (
+              <p>REACT Subscription: <strong>${data.costs?.reactSubscription.toLocaleString()}/year</strong></p>
+            )}
+          </div>
 
-      <div className="cta-buttons">
-        <button onClick={handlePrint}>Print</button>
-        <button onClick={handleDownloadPDF}>Download PDF</button>
-        <button onClick={handleEmail}>Email My Estimate</button>
-        <button onClick={handleReset}>Start Over</button>
-      </div>
+          <div className="chart-section">
+            <Chart data={data} />
+          </div>
+
+          <div className="cta-buttons">
+            <button 
+              onClick={handlePrint}
+              disabled={isLoading}
+            >
+              Print
+            </button>
+            <button 
+              onClick={handleDownloadPDF}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Generating PDF...' : 'Download PDF'}
+            </button>
+            <button 
+              onClick={handleEmail}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Sending...' : 'Email My Estimate'}
+            </button>
+            <button 
+              onClick={handleReset}
+              disabled={isLoading}
+            >
+              Start Over
+            </button>
+          </div>
+        </>
+      )}
     </div>
-  ), [data, handlePrint, handleDownloadPDF, handleEmail, handleReset]);
+  ), [data, error, isLoading, lastSaved, handlePrint, handleDownloadPDF, handleEmail, handleReset]);
 
   return (
-    <div className="budget-tool-hero">
-      <div className="budget-overlay"></div>
-      <div className="budget-content">
-        <h1 className="budget-title">WES3 Budget Tool</h1>
-  
-        {!formSubmitted ? (
-          <FormStep onUpdate={handleDataUpdate} />
-        ) : (
-          estimateResult
-        )}
+    <ErrorBoundary>
+      <div className="budget-tool-hero">
+        <div className="budget-overlay"></div>
+        <div className="budget-content">
+          <h1 className="budget-title">WES3 Budget Tool</h1>
+          
+          {isLoading && !formSubmitted && (
+            <div className="loading-overlay">
+              <div className="loading-spinner"></div>
+              <p>Calculating estimate...</p>
+            </div>
+          )}
+    
+          {!formSubmitted ? (
+            <FormStep onUpdate={handleDataUpdate} />
+          ) : (
+            estimateResult
+          )}
+        </div>
       </div>
-    </div>
-  );  
+    </ErrorBoundary>
+  );
 }
 
 export default React.memo(BudgetTool);

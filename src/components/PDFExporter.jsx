@@ -1,28 +1,298 @@
 import React from 'react';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import Chart from 'chart.js/auto';
 
-function PDFExporter({ data }) {
-  // 1) Defensive check: fallback if data is missing
-  const siteType = data?.siteType || 'N/A';
-  const siteSize = data?.siteSize || 'N/A';
-  const projectPhase = data?.projectPhase || 'N/A';
+class PDFExporter {
+  constructor(data) {
+    this.data = data;
+    this.doc = new jsPDF();
+    this.pageHeight = this.doc.internal.pageSize.height;
+    this.pageWidth = this.doc.internal.pageSize.width;
+    this.margin = 20;
+    this.currentY = this.margin;
+  }
 
-  const handleExport = () => {
-    const doc = new jsPDF();
+  async generatePDF() {
+    try {
+      // Add header with logo
+      this.addHeader();
+      
+      // Add customer information
+      this.addCustomerInfo();
+      
+      // Add site specifications
+      this.addSiteSpecs();
+      
+      // Add device quantities table
+      this.addDeviceTable();
+      
+      // Add cost breakdown
+      this.addCostBreakdown();
+      
+      // Add coverage details
+      this.addCoverageDetails();
+      
+      // Add chart visualization
+      await this.addDeviceChart();
+      
+      // Add terms and conditions
+      this.addTermsAndConditions();
+      
+      // Add footer
+      this.addFooter();
+      
+      // Save the PDF
+      this.doc.save('WES3-Budget-Estimate.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      throw new Error('Failed to generate PDF');
+    }
+  }
 
-    doc.text('WES3 Budget Estimate', 10, 10);
-    doc.text(`Site Type: ${siteType}`, 10, 20);
-    doc.text(`Site Size: ${siteSize} sq. ft`, 10, 30);
-    doc.text(`Project Phase: ${projectPhase}`, 10, 40);
+  addHeader() {
+    const title = 'WES3 Fire Safety System Budget Estimate';
+    const date = new Date().toLocaleDateString();
+    
+    // Add logo if available
+    // this.doc.addImage('logo.png', 'PNG', this.margin, this.currentY, 40, 20);
+    
+    this.doc.setFontSize(20);
+    this.doc.text(title, this.pageWidth / 2, this.currentY + 10, { align: 'center' });
+    
+    this.doc.setFontSize(10);
+    this.doc.text(`Generated: ${date}`, this.pageWidth - this.margin, this.currentY + 10, { align: 'right' });
+    
+    this.currentY += 30;
+  }
 
-    doc.save('WES3-Budget-Estimate.pdf');
-  };
+  addCustomerInfo() {
+    this.doc.setFontSize(14);
+    this.doc.text('Customer Information', this.margin, this.currentY);
+    this.currentY += 10;
 
-  return (
-    <button onClick={handleExport}>
-      Download PDF
-    </button>
-  );
+    const customerInfo = [
+      ['Name:', this.data.name],
+      ['Company:', this.data.companyName],
+      ['Email:', this.data.email],
+      ['Phone:', this.data.phone || 'Not provided']
+    ];
+
+    this.doc.autoTable({
+      startY: this.currentY,
+      head: [],
+      body: customerInfo,
+      theme: 'plain',
+      margin: { left: this.margin },
+      styles: { fontSize: 10 }
+    });
+
+    this.currentY = this.doc.lastAutoTable.finalY + 10;
+  }
+
+  addSiteSpecs() {
+    this.doc.setFontSize(14);
+    this.doc.text('Site Specifications', this.margin, this.currentY);
+    this.currentY += 10;
+
+    const siteSpecs = [
+      ['Site Size:', `${this.data.siteSize} sq ft`],
+      ['Number of Floors:', this.data.floors],
+      ['Number of Staircases:', this.data.stairs],
+      ['Construction Type:', this.data.constructionType],
+      ['Construction Phase:', this.data.constructionPhase],
+      ['Coverage Level:', this.data.coverageDetails.level]
+    ];
+
+    this.doc.autoTable({
+      startY: this.currentY,
+      head: [],
+      body: siteSpecs,
+      theme: 'plain',
+      margin: { left: this.margin },
+      styles: { fontSize: 10 }
+    });
+
+    this.currentY = this.doc.lastAutoTable.finalY + 10;
+  }
+
+  addDeviceTable() {
+    this.doc.setFontSize(14);
+    this.doc.text('Required Devices', this.margin, this.currentY);
+    this.currentY += 10;
+
+    const deviceData = [
+      ['Device Type', 'Quantity'],
+      ['Smoke Detectors', this.data.deviceCounts.smoke],
+      ['Heat Detectors', this.data.deviceCounts.heat],
+      ['Call Points', this.data.deviceCounts.callPoints],
+      ['Interface Units', this.data.deviceCounts.interfaceUnits]
+    ];
+
+    this.doc.autoTable({
+      startY: this.currentY,
+      head: [deviceData[0]],
+      body: deviceData.slice(1),
+      theme: 'striped',
+      margin: { left: this.margin },
+      styles: { fontSize: 10 }
+    });
+
+    this.currentY = this.doc.lastAutoTable.finalY + 10;
+  }
+
+  addCostBreakdown() {
+    this.doc.setFontSize(14);
+    this.doc.text('Cost Breakdown', this.margin, this.currentY);
+    this.currentY += 10;
+
+    const formatCurrency = (amount) => `$${amount.toLocaleString()}`;
+
+    const costData = [
+      ['Item', 'Cost'],
+      ['Smoke Detectors', formatCurrency(this.data.costs.smokeDetectors)],
+      ['Heat Detectors', formatCurrency(this.data.costs.heatDetectors)],
+      ['Call Points', formatCurrency(this.data.costs.callPoints)],
+      ['Interface Units', formatCurrency(this.data.costs.interfaceUnits)],
+      ['Installation', formatCurrency(this.data.costs.installation)],
+      ['Annual Maintenance', formatCurrency(this.data.costs.maintenance)]
+    ];
+
+    if (this.data.costs.reactSubscription > 0) {
+      costData.push(['REACT Subscription (Annual)', formatCurrency(this.data.costs.reactSubscription)]);
+    }
+
+    costData.push(['Total', formatCurrency(this.data.costs.total)]);
+
+    this.doc.autoTable({
+      startY: this.currentY,
+      head: [costData[0]],
+      body: costData.slice(1),
+      theme: 'striped',
+      margin: { left: this.margin },
+      styles: { fontSize: 10 },
+      footStyles: { fillColor: [220, 220, 220] }
+    });
+
+    this.currentY = this.doc.lastAutoTable.finalY + 10;
+  }
+
+  addCoverageDetails() {
+    this.doc.setFontSize(14);
+    this.doc.text('Coverage Details', this.margin, this.currentY);
+    this.currentY += 10;
+
+    const coverageInfo = [
+      ['Coverage Level:', this.data.coverageDetails.level],
+      ['Construction Type:', this.data.coverageDetails.constructionType],
+      ['Device Spacing:', `${this.data.coverageDetails.spacing} ft`],
+      ['Coverage Multiplier:', this.data.coverageDetails.multiplier]
+    ];
+
+    this.doc.autoTable({
+      startY: this.currentY,
+      head: [],
+      body: coverageInfo,
+      theme: 'plain',
+      margin: { left: this.margin },
+      styles: { fontSize: 10 }
+    });
+
+    this.currentY = this.doc.lastAutoTable.finalY + 10;
+  }
+
+  async addDeviceChart() {
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 300;
+
+    // Create chart
+    new Chart(canvas.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Smoke Detectors', 'Heat Detectors', 'Call Points', 'Interface Units'],
+        datasets: [{
+          data: [
+            this.data.deviceCounts.smoke,
+            this.data.deviceCounts.heat,
+            this.data.deviceCounts.callPoints,
+            this.data.deviceCounts.interfaceUnits
+          ],
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0'
+          ]
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Device Distribution'
+          }
+        }
+      }
+    });
+
+    // Convert chart to image
+    const chartImage = canvas.toDataURL('image/png');
+    
+    // Add chart to PDF
+    if (this.currentY + 150 > this.pageHeight) {
+      this.doc.addPage();
+      this.currentY = this.margin;
+    }
+
+    this.doc.addImage(chartImage, 'PNG', this.margin, this.currentY, 170, 120);
+    this.currentY += 130;
+  }
+
+  addTermsAndConditions() {
+    if (this.currentY + 100 > this.pageHeight) {
+      this.doc.addPage();
+      this.currentY = this.margin;
+    }
+
+    this.doc.setFontSize(12);
+    this.doc.text('Terms and Conditions', this.margin, this.currentY);
+    this.currentY += 10;
+
+    const terms = [
+      '1. This estimate is valid for 30 days from the generation date.',
+      '2. Final costs may vary based on site survey and specific requirements.',
+      '3. Installation costs are estimated at 30% of hardware costs.',
+      '4. Annual maintenance costs are estimated at 15% of hardware costs.',
+      '5. All prices are subject to applicable taxes and fees.',
+      '6. REACT subscription is billed annually if selected.'
+    ];
+
+    this.doc.setFontSize(8);
+    terms.forEach(term => {
+      if (this.currentY + 10 > this.pageHeight) {
+        this.doc.addPage();
+        this.currentY = this.margin;
+      }
+      this.doc.text(term, this.margin, this.currentY);
+      this.currentY += 10;
+    });
+  }
+
+  addFooter() {
+    const pageCount = this.doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      this.doc.setPage(i);
+      this.doc.setFontSize(8);
+      this.doc.text(
+        `Page ${i} of ${pageCount}`,
+        this.pageWidth / 2,
+        this.pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+  }
 }
 
 export default PDFExporter;
