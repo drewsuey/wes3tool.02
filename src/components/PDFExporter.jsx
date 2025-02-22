@@ -40,7 +40,7 @@ class PDFExporter {
       this.addFooter();
       
       // Save the PDF
-      this.doc.save('WES3-Budget-Estimate.pdf');
+      this.doc.save('Ramtech-WES3-Device-Estimate.pdf');
     } catch (error) {
       console.error('Error generating PDF:', error);
       throw new Error('Failed to generate PDF');
@@ -48,16 +48,20 @@ class PDFExporter {
   }
 
   addHeader() {
-    const title = 'WES3 Fire Safety System Budget Estimate';
+    // Add Ramtech logo
+    const logoWidth = 40;
+    const logoHeight = 15;
+    this.doc.addImage('/public/logo.jpg', 'JPEG', this.margin, this.currentY, logoWidth, logoHeight);
+    
+    const title = 'WES3 Fire Safety System Device Estimate';
     const date = new Date().toLocaleDateString();
     
-    // Add logo if available
-    // this.doc.addImage('logo.png', 'PNG', this.margin, this.currentY, 40, 20);
-    
     this.doc.setFontSize(20);
-    this.doc.text(title, this.pageWidth / 2, this.currentY + 10, { align: 'center' });
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
+    this.doc.text(title, this.margin + logoWidth + 10, this.currentY + 10);
     
     this.doc.setFontSize(10);
+    this.doc.setTextColor(0, 0, 0); // Reset to black
     this.doc.text(`Generated: ${date}`, this.pageWidth - this.margin, this.currentY + 10, { align: 'right' });
     
     this.currentY += 30;
@@ -65,7 +69,9 @@ class PDFExporter {
 
   addCustomerInfo() {
     this.doc.setFontSize(14);
-    this.doc.text('Customer Information', this.margin, this.currentY);
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
+    this.doc.text('Part 1: Customer Information', this.margin, this.currentY);
+    this.doc.setTextColor(0, 0, 0); // Reset to black
     this.currentY += 10;
 
     const customerInfo = [
@@ -81,7 +87,14 @@ class PDFExporter {
       body: customerInfo,
       theme: 'plain',
       margin: { left: this.margin },
-      styles: { fontSize: 10 }
+      styles: { 
+        fontSize: 10,
+        cellPadding: 3,
+        textColor: [51, 51, 51]
+      },
+      columnStyles: {
+        0: { fontStyle: 'bold', textColor: [80, 80, 80] }
+      }
     });
 
     this.currentY = this.doc.lastAutoTable.finalY + 10;
@@ -89,7 +102,9 @@ class PDFExporter {
 
   addSiteSpecs() {
     this.doc.setFontSize(14);
-    this.doc.text('Site Specifications', this.margin, this.currentY);
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
+    this.doc.text('Part 2: Site Specifications', this.margin, this.currentY);
+    this.doc.setTextColor(0, 0, 0); // Reset to black
     this.currentY += 10;
 
     const siteSpecs = [
@@ -107,7 +122,14 @@ class PDFExporter {
       body: siteSpecs,
       theme: 'plain',
       margin: { left: this.margin },
-      styles: { fontSize: 10 }
+      styles: { 
+        fontSize: 10,
+        cellPadding: 3,
+        textColor: [51, 51, 51]
+      },
+      columnStyles: {
+        0: { fontStyle: 'bold', textColor: [80, 80, 80] }
+      }
     });
 
     this.currentY = this.doc.lastAutoTable.finalY + 10;
@@ -115,7 +137,9 @@ class PDFExporter {
 
   addDeviceTable() {
     this.doc.setFontSize(14);
-    this.doc.text('Required Devices', this.margin, this.currentY);
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
+    this.doc.text('Part 3: Required Devices', this.margin, this.currentY);
+    this.doc.setTextColor(0, 0, 0); // Reset to black
     this.currentY += 10;
 
     const deviceData = [
@@ -130,9 +154,21 @@ class PDFExporter {
       startY: this.currentY,
       head: [deviceData[0]],
       body: deviceData.slice(1),
-      theme: 'striped',
+      theme: 'grid',
       margin: { left: this.margin },
-      styles: { fontSize: 10 }
+      styles: { 
+        fontSize: 10,
+        cellPadding: 5,
+        textColor: [51, 51, 51]
+      },
+      headStyles: {
+        fillColor: [255, 69, 0],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      }
     });
 
     this.currentY = this.doc.lastAutoTable.finalY + 10;
@@ -140,7 +176,9 @@ class PDFExporter {
 
   addCoverageDetails() {
     this.doc.setFontSize(14);
-    this.doc.text('Coverage Details', this.margin, this.currentY);
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
+    this.doc.text('Part 4: Coverage Details', this.margin, this.currentY);
+    this.doc.setTextColor(0, 0, 0); // Reset to black
     this.currentY += 10;
 
     const coverageInfo = [
@@ -156,7 +194,14 @@ class PDFExporter {
       body: coverageInfo,
       theme: 'plain',
       margin: { left: this.margin },
-      styles: { fontSize: 10 }
+      styles: { 
+        fontSize: 10,
+        cellPadding: 3,
+        textColor: [51, 51, 51]
+      },
+      columnStyles: {
+        0: { fontStyle: 'bold', textColor: [80, 80, 80] }
+      }
     });
 
     this.currentY = this.doc.lastAutoTable.finalY + 10;
@@ -194,7 +239,12 @@ class PDFExporter {
           plugins: {
             title: {
               display: true,
-              text: 'Device Distribution'
+              text: 'Device Distribution',
+              color: '#FF4500', // Ramtech orange
+              font: {
+                size: 16,
+                weight: 'bold'
+              }
             },
             legend: {
               display: true,
@@ -235,7 +285,9 @@ class PDFExporter {
     }
 
     this.doc.setFontSize(12);
+    this.doc.setTextColor(255, 69, 0); // Ramtech orange
     this.doc.text('Terms and Conditions', this.margin, this.currentY);
+    this.doc.setTextColor(0, 0, 0); // Reset to black
     this.currentY += 10;
 
     const terms = [
