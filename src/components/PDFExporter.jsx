@@ -26,6 +26,10 @@ class PDFExporter {
       // Add site specifications
       this.addSiteSpecs();
       
+      // Force page break before Part 3
+      this.doc.addPage();
+      this.currentY = this.margin;
+      
       // Add device quantities table
       this.addDeviceTable();
       
@@ -83,7 +87,7 @@ class PDFExporter {
     this.doc.setTextColor(0, 0, 0); // Reset to black
     this.doc.text(`Generated: ${date}`, this.pageWidth - this.margin, this.currentY, { align: 'right' });
     
-    this.currentY += 35;
+    this.currentY += 25;
   }
 
   addCustomerInfo() {
@@ -155,6 +159,9 @@ class PDFExporter {
   }
 
   addDeviceTable() {
+    // Add some spacing at the top of page 2
+    this.currentY += 10;
+
     this.doc.setFontSize(14);
     this.doc.setTextColor(255, 69, 0); // Ramtech orange
     this.doc.text('Part 3: Required Devices', this.margin, this.currentY);
@@ -194,10 +201,6 @@ class PDFExporter {
   }
 
   addCoverageDetails() {
-    if (this.checkPageBreak(150)) {
-      this.currentY += 10;
-    }
-
     this.doc.setFontSize(14);
     this.doc.setTextColor(255, 69, 0); // Ramtech orange
     this.doc.text('Part 4: Coverage Details', this.margin, this.currentY);
@@ -232,10 +235,6 @@ class PDFExporter {
 
   async addDeviceChart() {
     try {
-      if (this.checkPageBreak(200)) {
-        this.currentY += 10;
-      }
-
       // Create a canvas element
       const canvas = document.createElement('canvas');
       canvas.width = 400;
