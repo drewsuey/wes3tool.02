@@ -9,8 +9,10 @@ class PDFExporter {
     this.doc = new jsPDF();
     this.pageHeight = this.doc.internal.pageSize.height;
     this.pageWidth = this.doc.internal.pageSize.width;
-    this.margin = 20;
+    this.margin = 30;
+    this.contentWidth = this.pageWidth - (2 * this.margin);
     this.currentY = this.margin;
+    this.footerHeight = 35;
   }
 
   async generatePDF() {
@@ -47,6 +49,15 @@ class PDFExporter {
     }
   }
 
+  checkPageBreak(requiredSpace) {
+    if (this.currentY + requiredSpace > this.pageHeight - this.footerHeight) {
+      this.doc.addPage();
+      this.currentY = this.margin;
+      return true;
+    }
+    return false;
+  }
+
   addHeader() {
     // Add Ramtech logo in top left
     const logoWidth = 40;
@@ -58,7 +69,7 @@ class PDFExporter {
     this.doc.setTextColor(255, 69, 0); // Ramtech orange
     this.doc.text('RAMTECHGLOBAL.COM', this.pageWidth - this.margin, this.currentY + 5, { align: 'right' });
     
-    this.currentY += 30;
+    this.currentY += 25;
     
     // Add title
     const title = 'WES3 Fire Safety System Device Estimate';
@@ -72,7 +83,7 @@ class PDFExporter {
     this.doc.setTextColor(0, 0, 0); // Reset to black
     this.doc.text(`Generated: ${date}`, this.pageWidth - this.margin, this.currentY, { align: 'right' });
     
-    this.currentY += 20;
+    this.currentY += 35;
   }
 
   addCustomerInfo() {
@@ -105,7 +116,7 @@ class PDFExporter {
       }
     });
 
-    this.currentY = this.doc.lastAutoTable.finalY + 10;
+    this.currentY = this.doc.lastAutoTable.finalY + 20;
   }
 
   addSiteSpecs() {
@@ -140,7 +151,7 @@ class PDFExporter {
       }
     });
 
-    this.currentY = this.doc.lastAutoTable.finalY + 10;
+    this.currentY = this.doc.lastAutoTable.finalY + 20;
   }
 
   addDeviceTable() {
@@ -179,10 +190,14 @@ class PDFExporter {
       }
     });
 
-    this.currentY = this.doc.lastAutoTable.finalY + 10;
+    this.currentY = this.doc.lastAutoTable.finalY + 20;
   }
 
   addCoverageDetails() {
+    if (this.checkPageBreak(150)) {
+      this.currentY += 10;
+    }
+
     this.doc.setFontSize(14);
     this.doc.setTextColor(255, 69, 0); // Ramtech orange
     this.doc.text('Part 4: Coverage Details', this.margin, this.currentY);
@@ -212,11 +227,15 @@ class PDFExporter {
       }
     });
 
-    this.currentY = this.doc.lastAutoTable.finalY + 10;
+    this.currentY = this.doc.lastAutoTable.finalY + 20;
   }
 
   async addDeviceChart() {
     try {
+      if (this.checkPageBreak(200)) {
+        this.currentY += 10;
+      }
+
       // Create a canvas element
       const canvas = document.createElement('canvas');
       canvas.width = 400;
@@ -269,14 +288,12 @@ class PDFExporter {
       // Convert chart to image
       const chartImage = canvas.toDataURL('image/png');
       
-      // Add chart to PDF
-      if (this.currentY + 150 > this.pageHeight) {
-        this.doc.addPage();
-        this.currentY = this.margin;
-      }
-
-      this.doc.addImage(chartImage, 'PNG', this.margin, this.currentY, 170, 120);
-      this.currentY += 130;
+      const chartWidth = this.contentWidth * 0.7;
+      const chartHeight = chartWidth * 0.7;
+      const chartX = this.margin + (this.contentWidth - chartWidth) / 2;
+      
+      this.doc.addImage(chartImage, 'PNG', chartX, this.currentY, chartWidth, chartHeight);
+      this.currentY += chartHeight + 30;
 
       // Cleanup
       chart.destroy();
@@ -287,16 +304,15 @@ class PDFExporter {
   }
 
   addTermsAndConditions() {
-    if (this.currentY + 100 > this.pageHeight) {
-      this.doc.addPage();
-      this.currentY = this.margin;
+    if (this.checkPageBreak(120)) {
+      this.currentY += 10;
     }
 
     this.doc.setFontSize(12);
     this.doc.setTextColor(255, 69, 0); // Ramtech orange
     this.doc.text('Terms and Conditions', this.margin, this.currentY);
     this.doc.setTextColor(0, 0, 0); // Reset to black
-    this.currentY += 10;
+    this.currentY += 15;
 
     const terms = [
       '1. This estimate is valid for 30 days from the generation date.',
@@ -308,16 +324,16 @@ class PDFExporter {
 
     this.doc.setFontSize(8);
     terms.forEach(term => {
-      if (this.currentY + 10 > this.pageHeight) {
+      if (this.currentY + 10 > this.pageHeight - this.footerHeight) {
         this.doc.addPage();
         this.currentY = this.margin;
       }
-    this.doc.text(term, this.margin, this.currentY);
+      this.doc.text(term, this.margin, this.currentY);
       this.currentY += 10;
     });
 
     // Add contact email
-    this.currentY += 10;
+    this.currentY += 15;
     this.doc.setFontSize(8);
     this.doc.text('If you have any questions about this, please contact react@ramtechglobal.com', this.margin, this.currentY);
   }
@@ -332,22 +348,17 @@ class PDFExporter {
       this.doc.text(
         `Page ${i} of ${pageCount}`,
         this.pageWidth / 2,
-        this.pageHeight - 20,
+        this.pageHeight - 30,
         { align: 'center' }
       );
       
-      // Add Orama and Halma logos in bottom right
-      const oramaWidth = 25;
-      const oramaHeight = 10;
-      const halmaWidth = 25;
-      const halmaHeight = 10;
-      const spacing = 5;
-      
       // Position Orama logo in bottom right
+      const logoWidth = 50;
+      const logoHeight = 20;
       this.doc.addImage('orama.png', 'PNG',
-        this.pageWidth - this.margin - oramaWidth,
-        this.pageHeight - 25,
-        oramaWidth, oramaHeight);
+        this.pageWidth - this.margin - logoWidth,
+        this.pageHeight - 30,
+        logoWidth, logoHeight);
     }
   }
 }
