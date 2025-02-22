@@ -163,52 +163,69 @@ class PDFExporter {
   }
 
   async addDeviceChart() {
-    // Create a canvas element
-    const canvas = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 300;
+    try {
+      // Create a canvas element
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 300;
+      const ctx = canvas.getContext('2d');
 
-    // Create chart
-    new Chart(canvas.getContext('2d'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Smoke Detectors', 'Heat Detectors', 'Call Points', 'Interface Units'],
-        datasets: [{
-          data: [
-            this.data.deviceCounts.smoke,
-            this.data.deviceCounts.heat,
-            this.data.deviceCounts.callPoints,
-            this.data.deviceCounts.interfaceUnits
-          ],
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0'
-          ]
-        }]
-      },
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: 'Device Distribution'
-          }
+      // Create chart
+      const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Smoke Detectors', 'Heat Detectors', 'Call Points', 'Interface Units'],
+          datasets: [{
+            data: [
+              this.data.deviceCounts?.smoke || 0,
+              this.data.deviceCounts?.heat || 0,
+              this.data.deviceCounts?.callPoints || 0,
+              this.data.deviceCounts?.interfaceUnits || 0
+            ],
+            backgroundColor: [
+              '#FF0000',
+              '#9B59B6',
+              '#00B050',
+              '#000000'
+            ]
+          }]
+        },
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: 'Device Distribution'
+            },
+            legend: {
+              display: true,
+              position: 'bottom'
+            }
+          },
+          animation: false // Important for PDF generation
         }
+      });
+
+      // Wait for chart rendering
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Convert chart to image
+      const chartImage = canvas.toDataURL('image/png');
+      
+      // Add chart to PDF
+      if (this.currentY + 150 > this.pageHeight) {
+        this.doc.addPage();
+        this.currentY = this.margin;
       }
-    });
 
-    // Convert chart to image
-    const chartImage = canvas.toDataURL('image/png');
-    
-    // Add chart to PDF
-    if (this.currentY + 150 > this.pageHeight) {
-      this.doc.addPage();
-      this.currentY = this.margin;
+      this.doc.addImage(chartImage, 'PNG', this.margin, this.currentY, 170, 120);
+      this.currentY += 130;
+
+      // Cleanup
+      chart.destroy();
+    } catch (error) {
+      console.error('Error generating chart:', error);
+      // Continue with PDF generation even if chart fails
     }
-
-    this.doc.addImage(chartImage, 'PNG', this.margin, this.currentY, 170, 120);
-    this.currentY += 130;
   }
 
   addTermsAndConditions() {
