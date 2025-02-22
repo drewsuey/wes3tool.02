@@ -334,7 +334,7 @@ class PDFExporter {
     // Add contact email
     this.currentY += 15;
     this.doc.setFontSize(8);
-    this.doc.text('If you have any questions about this, please contact react@ramtechglobal.com', this.margin, this.currentY);
+    this.doc.text('If you have any questions about this, please contact solutions@ramtechglobal.com', this.margin, this.currentY);
   }
 
   addFooter() {

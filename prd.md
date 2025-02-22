@@ -1,7 +1,7 @@
 # WES3 Budget Tool - Project Requirements Document
 
 ## App Overview
-The WES3 Budget Tool is a web-based application designed to help construction and facility managers estimate their fire safety system requirements. The tool provides automated calculations for fire detection device quantities based on site specifications and generates detailed budget estimates that can be exported in various formats.
+The WES3 Budget Tool is a web-based application designed to help construction and facility managers estimate their fire safety system requirements. The tool provides automated calculations for fire detection device quantities based on site specifications and generates professionally branded PDF documents.
 
 ## User Flow
 1. Landing Page
@@ -9,157 +9,183 @@ The WES3 Budget Tool is a web-based application designed to help construction an
    - "Get Started" button leads to the budget calculator
 
 2. Multi-step Form Process
-   - Step 1: Contact Information
-     - Personal details
-     - Company information
-     - Contact preferences
+   - Part 1: Customer Information
+     - Name
+     - Company name
+     - Email address
+     - Phone number (optional)
    
-   - Step 2: Site Information
+   - Part 2: Site Information
      - Site size (sq. ft)
      - Number of floors
      - Number of staircases
      - Construction type
      - Construction phase
      - Coverage level selection
-   
-   - Step 3: System Requirements
-     - Interface device integration options
-     - REACT digital app integration
-     - Additional requirements specification
 
 3. Results & Export
-   - Display calculated device quantities
+   - Part 3: Required Devices
      - Smoke detectors
      - Heat detectors
      - Call points
      - Interface units
-   - Visual representation through charts
-   - Export options (PDF, Print, Email)
+   
+   - Part 4: Coverage Details
+     - Coverage level
+     - Construction type
+     - Device spacing
+     - Coverage multiplier
 
-## Tech Stack & APIs
+   - Device Distribution Chart
+     - Visual representation of device quantities
+     - Color-coded by device type
+     - Interactive legend
+
+   - Export Options
+     - PDF generation with branding
+     - Print functionality
+     - Email distribution
+
+## Tech Stack
 Frontend:
-- React 18.3.1
-- React Router DOM 7.1.5
+- React 18.2.0
+- Vite 6.0.11
 - Chart.js with react-chartjs-2
-- React-tooltip for enhanced UX
-- Vite as build tool
+- Custom form validation
+- PDF generation with jsPDF
 
-Backend:
-- Node.js with Express
-- Nodemailer for email functionality
-- CORS for cross-origin resource sharing
-- Environment configuration with dotenv
-
-Export Services:
-- jsPDF for PDF generation
-- HTML2Canvas for visual exports
+Document Generation:
+- jsPDF for document creation
+- jspdf-autotable for tables
+- html2canvas for charts
+- Custom PDFExporter class
 
 ## Core Features
-1. Dynamic Device Calculation
-   - Automated calculation of required devices based on site specifications
-   - Support for different coverage levels (maximum, medium, low)
-   - Consideration of building characteristics
 
-2. Interactive Form Interface
-   - Multi-step form with progress tracking
+1. Form Management
+   - Multi-part organization
    - Real-time validation
-   - Responsive design
-   - Accessibility compliance
+   - Cross-field validation
+   - Form state persistence
 
-3. Visualization
-   - Doughnut chart for device distribution
-   - Visual comparison of coverage levels
-   - Interactive tooltips
+2. Device Calculations
+   - Automated quantity calculations
+   - Coverage level adjustments
+   - Building type considerations
+   - Minimum device requirements
 
-4. Export Capabilities
-   - PDF generation
-   - Print-friendly formatting
-   - Email distribution
-   - REACT integration cost calculation
+3. PDF Generation
+   - Branded document layout
+   - Professional formatting
+   - Multi-page organization
+   - Consistent styling
 
-## In-scope
-- User input validation and error handling
+4. Data Visualization
+   - Interactive doughnut chart
+   - Brand-consistent colors
+   - Responsive sizing
+   - Clear legends
+
+## Document Structure
+
+### PDF Layout
+1. Page 1
+   - Header with logo and website
+   - Part 1: Customer Information
+   - Part 2: Site Specifications
+
+2. Page 2
+   - Part 3: Required Devices
+   - Part 4: Coverage Details
+   - Device Distribution Chart
+   - Terms and Conditions
+
+3. Footer Elements
+   - Page numbers
+   - Brand logos
+   - Contact information
+
+## In-scope Features
+- User input validation
 - Device quantity calculations
 - Coverage level recommendations
-- PDF report generation
-- Email functionality
-- Basic authentication
-- Responsive design
-- Accessibility features
+- Branded PDF generation
+- Form state persistence
 - Data visualization
-- Form state management
+- Print functionality
+- Responsive design
+- Cross-browser support
 
 ## Out-of-scope
 - User accounts/authentication
 - Payment processing
-- Real-time collaboration
 - Mobile app versions
-- Integration with external fire system databases
+- External API integrations
 - Historical data tracking
 - Custom device specifications
-- 3D visualization
 
 ## Non-functional Requirements
+
 1. Performance
-   - Page load time < 3 seconds
-   - Form submission response < 2 seconds
-   - PDF generation < 5 seconds
+   - Form response < 1 second
+   - PDF generation < 3 seconds
+   - Chart rendering < 1 second
 
-2. Accessibility
-   - WCAG 2.1 AA compliance
-   - Screen reader compatibility
-   - Keyboard navigation support
-
-3. Security
-   - Form data validation
-   - Email verification
-   - Rate limiting for form submissions
-   - Secure PDF generation
-
-4. Usability
+2. Usability
+   - Clear form progression
    - Intuitive navigation
-   - Clear error messages
+   - Professional document output
    - Mobile responsiveness
-   - Cross-browser compatibility
 
-## Constraints & Assumptions
-Constraints:
-- Browser compatibility (modern browsers only)
-- Maximum file size for PDF exports
-- Email service provider limitations
-- API rate limits
-- Device calculation accuracy based on standard metrics
+3. Reliability
+   - Form data persistence
+   - Error handling
+   - Fallback options
+   - Browser compatibility
 
-Assumptions:
-- Users have basic knowledge of construction terms
-- Internet connectivity is available
-- Modern browser support
-- Standard screen resolutions
-- English language interface
-- Basic device specifications are sufficient
+4. Security
+   - Input validation
+   - Safe PDF generation
+   - Data sanitization
+   - Environment variable protection
 
-## Known Issues & Potential Pitfalls
-1. Technical Challenges
-   - PDF generation may fail with large datasets
-   - Email delivery reliability
-   - Chart rendering performance with large numbers
-   - Form state management complexity
+## Design Requirements
 
-2. Business Logic
-   - Coverage calculations may need adjustment for special cases
-   - Device ratio assumptions may vary by region
-   - Construction type classifications may be too broad
+1. Branding
+   - Ramtech logo placement
+   - Brand color usage
+   - Consistent typography
+   - Professional layout
 
-3. User Experience
-   - Multi-step form completion rate
-   - Mobile form usability
-   - PDF formatting consistency across devices
-   - Chart readability on small screens
+2. Document Format
+   - Clear section organization
+   - Proper spacing
+   - Table formatting
+   - Chart placement
 
-4. Integration
-   - Email service provider limitations
-   - PDF generation library constraints
-   - Chart.js version compatibility
-   - Backend API scalability
+3. Responsive Design
+   - Form adaptation
+   - Chart scaling
+   - Table responsiveness
+   - Print optimization
 
-This document serves as a comprehensive guide for the WES3 Budget Tool project, outlining its scope, requirements, and potential challenges. It should be reviewed and updated as the project evolves and new requirements emerge.
+## Known Limitations
+1. PDF Generation
+   - Chart rendering dependencies
+   - Browser compatibility
+   - Memory usage
+   - File size limits
+
+2. Form Handling
+   - Browser storage limits
+   - Validation complexity
+   - Cross-field dependencies
+   - State management
+
+3. Data Visualization
+   - Chart rendering performance
+   - Mobile display constraints
+   - Print quality
+   - Browser support
+
+This document outlines the current implementation and requirements of the WES3 Budget Tool, focusing on its core functionality and user experience. It serves as a reference for maintaining and extending the application's features.

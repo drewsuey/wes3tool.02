@@ -2,6 +2,9 @@
 
 import { CONSTRUCTION_REQUIREMENTS } from './validationrules';
 
+// MCP Server for advanced calculations
+const WOLFRAM_SERVER = "github.com/Garoth/wolframalpha-llm-mcp";
+
 // Device spacing based on coverage level
 const COVERAGE_SPACING = {
   max: {
@@ -31,15 +34,39 @@ const DEVICE_COSTS = {
 };
 
 // Calculate device coverage area based on construction type and coverage level
-export const calculateCoverageArea = (constructionType, coverageLevel) => {
+export const calculateCoverageArea = async (constructionType, coverageLevel) => {
   const baseSpacing = CONSTRUCTION_REQUIREMENTS[constructionType].maxSpacing;
   const spacingMultiplier = COVERAGE_SPACING[coverageLevel].multiplier;
   const radius = baseSpacing * spacingMultiplier;
+  
+  try {
+    // Validate calculation using WolframAlpha
+    const query = `area of circle with radius ${radius} meters`;
+    const result = await window.mcpTools.use_mcp_tool(WOLFRAM_SERVER, "get_simple_answer", {
+      question: query
+    });
+    
+    // Parse the result to get just the numerical value
+    const match = result.match(/(\d+(\.\d+)?)/);
+    if (match) {
+      return parseFloat(match[0]);
+    }
+  } catch (error) {
+    console.warn('WolframAlpha validation failed, using local calculation:', error);
+  }
+  
+  // Fallback to local calculation if WolframAlpha fails
   return Math.PI * Math.pow(radius, 2);
 };
 
+// Convert feet to meters for WolframAlpha calculations
+const feetToMeters = (feet) => feet * 0.3048;
+
+// Convert square meters back to square feet
+const squareMetersToFeet = (squareMeters) => squareMeters * 10.764;
+
 // Calculate required detectors based on area and construction requirements
-export const calculateDetectors = (formData) => {
+export const calculateDetectors = async (formData) => {
   const {
     siteSize,
     floors,
@@ -47,24 +74,44 @@ export const calculateDetectors = (formData) => {
     coverageLevel
   } = formData;
 
-  const coverageArea = calculateCoverageArea(constructionType, coverageLevel);
-  const minDetectorsPerFloor = CONSTRUCTION_REQUIREMENTS[constructionType].minDetectorsPerFloor;
+  try {
+    // Convert spacing from feet to meters for WolframAlpha
+    const coverageArea = await calculateCoverageArea(constructionType, coverageLevel);
+    // Convert result back to square feet for our calculations
+    const coverageAreaFt = squareMetersToFeet(coverageArea);
+    const minDetectorsPerFloor = CONSTRUCTION_REQUIREMENTS[constructionType].minDetectorsPerFloor;
   
   // Calculate total detectors needed based on area
-  const detectorsPerFloor = Math.max(
-    minDetectorsPerFloor,
-    Math.ceil(siteSize / (floors * coverageArea))
-  );
-  
-  const totalDetectors = detectorsPerFloor * floors;
-  
-  // Split between smoke and heat detectors based on coverage level
-  const { smokeRatio, heatRatio } = COVERAGE_SPACING[coverageLevel];
-  
-  return {
-    smoke: Math.ceil(totalDetectors * smokeRatio),
-    heat: Math.ceil(totalDetectors * heatRatio)
-  };
+    const detectorsPerFloor = Math.max(
+      minDetectorsPerFloor,
+      Math.ceil(siteSize / (floors * coverageAreaFt))
+    );
+    
+    const totalDetectors = detectorsPerFloor * floors;
+    
+    // Split between smoke and heat detectors based on coverage level
+    const { smokeRatio, heatRatio } = COVERAGE_SPACING[coverageLevel];
+    
+    return {
+      smoke: Math.ceil(totalDetectors * smokeRatio),
+      heat: Math.ceil(totalDetectors * heatRatio)
+    };
+  } catch (error) {
+    console.error('Failed to calculate detectors:', error);
+    // Fallback to basic calculation without WolframAlpha
+    const coverageArea = Math.PI * Math.pow(CONSTRUCTION_REQUIREMENTS[constructionType].maxSpacing * COVERAGE_SPACING[coverageLevel].multiplier, 2);
+    const minDetectorsPerFloor = CONSTRUCTION_REQUIREMENTS[constructionType].minDetectorsPerFloor;
+    const detectorsPerFloor = Math.max(
+      minDetectorsPerFloor,
+      Math.ceil(siteSize / (floors * coverageArea))
+    );
+    const totalDetectors = detectorsPerFloor * floors;
+    const { smokeRatio, heatRatio } = COVERAGE_SPACING[coverageLevel];
+    return {
+      smoke: Math.ceil(totalDetectors * smokeRatio),
+      heat: Math.ceil(totalDetectors * heatRatio)
+    };
+  }
 };
 
 // Calculate call points based on building configuration
@@ -126,33 +173,61 @@ export const calculateCosts = (deviceCounts, hasReactIntegration) => {
   };
 };
 
+// Get technical explanation for calculations
+export const getCalculationExplanation = async (formData) => {
+  try {
+    // Convert measurements to metric for WolframAlpha
+    const siteSizeMeters = formData.siteSize * 0.092903; // Convert sq ft to sq m
+    const spacingMeters = feetToMeters(CONSTRUCTION_REQUIREMENTS[formData.constructionType].maxSpacing);
+    
+    const query = `In a ${formData.constructionType} building with ${formData.floors} floors and ${siteSizeMeters.toFixed(2)} square meters per floor, explain the optimal spacing for fire detection devices considering that the base spacing is ${spacingMeters.toFixed(2)} meters with a coverage multiplier of ${COVERAGE_SPACING[formData.coverageLevel].multiplier}. Include considerations for smoke vs heat detector ratios.`;
+    
+    const explanation = await window.mcpTools.use_mcp_tool(WOLFRAM_SERVER, "ask_llm", {
+      question: query
+    });
+    
+    return explanation;
+  } catch (error) {
+    console.warn('Failed to get calculation explanation:', error);
+    return null;
+  }
+};
+
 // Generate complete estimate
-export const generateEstimate = (formData) => {
-  const detectors = calculateDetectors(formData);
-  const callPoints = calculateCallPoints(
-    formData.floors,
-    formData.stairs,
-    formData.constructionType
-  );
-  const interfaceUnits = calculateInterfaceUnits(formData);
-  
-  const deviceCounts = {
-    smoke: detectors.smoke,
-    heat: detectors.heat,
-    callPoints,
-    interfaceUnits
-  };
-  
-  const costs = calculateCosts(deviceCounts, formData.reactIntegration);
-  
-  return {
-    deviceCounts,
-    costs,
-    coverageDetails: {
-      level: formData.coverageLevel,
-      constructionType: formData.constructionType,
-      spacing: CONSTRUCTION_REQUIREMENTS[formData.constructionType].maxSpacing,
-      multiplier: COVERAGE_SPACING[formData.coverageLevel].multiplier
-    }
-  };
+export const generateEstimate = async (formData) => {
+  try {
+    const detectors = await calculateDetectors(formData);
+    const callPoints = calculateCallPoints(
+      formData.floors,
+      formData.stairs,
+      formData.constructionType
+    );
+    const interfaceUnits = calculateInterfaceUnits(formData);
+    
+    const deviceCounts = {
+      smoke: detectors.smoke,
+      heat: detectors.heat,
+      callPoints,
+      interfaceUnits
+    };
+    
+    const costs = calculateCosts(deviceCounts, formData.reactIntegration);
+    
+    const explanation = await getCalculationExplanation(formData);
+    
+    return {
+      deviceCounts,
+      costs,
+      coverageDetails: {
+        level: formData.coverageLevel,
+        constructionType: formData.constructionType,
+        spacing: CONSTRUCTION_REQUIREMENTS[formData.constructionType].maxSpacing,
+        multiplier: COVERAGE_SPACING[formData.coverageLevel].multiplier,
+        technicalExplanation: explanation
+      }
+    };
+  } catch (error) {
+    console.error('Failed to generate estimate:', error);
+    throw error; // Re-throw to let caller handle the error
+  }
 };

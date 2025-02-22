@@ -71,7 +71,7 @@ function BudgetTool() {
     setError(null);
     
     try {
-      const estimate = generateEstimate(newData);
+      const estimate = await generateEstimate(newData);
       const updatedData = {
         ...newData,
         ...estimate
@@ -191,6 +191,15 @@ function BudgetTool() {
             )}
           </div>
 
+          {data.coverageDetails?.technicalExplanation && (
+            <div className="technical-details">
+              <h3>Technical Analysis</h3>
+              <p className="technical-explanation">
+                {data.coverageDetails.technicalExplanation}
+              </p>
+            </div>
+          )}
+
           <div className="chart-section">
             <Chart data={data} />
           </div>
@@ -228,6 +237,22 @@ function BudgetTool() {
 
   return (
     <ErrorBoundary>
+      <style>
+        {`
+          .technical-details {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+          }
+          .technical-explanation {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+          }
+        `}
+      </style>
       <div className="budget-tool-hero">
         <div className="budget-overlay"></div>
         <div className="budget-content">
