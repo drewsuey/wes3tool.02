@@ -5,22 +5,60 @@ import { CONSTRUCTION_REQUIREMENTS } from './validationrules';
 // MCP Server for advanced calculations
 const WOLFRAM_SERVER = "github.com/Garoth/wolframalpha-llm-mcp";
 
+// Standard spacing rules for detectors
+const DETECTOR_RULES = {
+  smoke: {
+    radius: 25, // feet
+    spacing: 50, // feet
+    wallDistance: 25 // feet
+  },
+  heat: {
+    radius: 17.5, // feet
+    spacing: 35, // feet
+    wallDistance: 17.5 // feet
+  }
+};
+
 // Device spacing based on coverage level
 const COVERAGE_SPACING = {
   max: {
     multiplier: 1.0,
     smokeRatio: 0.9,
-    heatRatio: 0.1
+    heatRatio: 0.1,
+    smoke: {
+      spacing: DETECTOR_RULES.smoke.spacing,
+      wallDistance: DETECTOR_RULES.smoke.wallDistance
+    },
+    heat: {
+      spacing: DETECTOR_RULES.heat.spacing,
+      wallDistance: DETECTOR_RULES.heat.wallDistance
+    }
   },
   medium: {
-    multiplier: 1.25,
+    multiplier: 1.15, // 15% increase
     smokeRatio: 0.8,
-    heatRatio: 0.2
+    heatRatio: 0.2,
+    smoke: {
+      spacing: DETECTOR_RULES.smoke.spacing * 1.15, // 57.5 feet
+      wallDistance: DETECTOR_RULES.smoke.wallDistance * 1.15 // 28.75 feet
+    },
+    heat: {
+      spacing: DETECTOR_RULES.heat.spacing * 1.15, // 40.25 feet
+      wallDistance: DETECTOR_RULES.heat.wallDistance * 1.15 // 20.13 feet
+    }
   },
   low: {
-    multiplier: 1.5,
+    multiplier: 1.3, // 30% increase
     smokeRatio: 0.7,
-    heatRatio: 0.3
+    heatRatio: 0.3,
+    smoke: {
+      spacing: DETECTOR_RULES.smoke.spacing * 1.3, // 65 feet
+      wallDistance: DETECTOR_RULES.smoke.wallDistance * 1.3 // 32.5 feet
+    },
+    heat: {
+      spacing: DETECTOR_RULES.heat.spacing * 1.3, // 45.5 feet
+      wallDistance: DETECTOR_RULES.heat.wallDistance * 1.3 // 22.75 feet
+    }
   }
 };
 
@@ -33,15 +71,14 @@ const DEVICE_COSTS = {
   reactSubscription: 2500 // annual cost
 };
 
-// Calculate device coverage area based on construction type and coverage level
-export const calculateCoverageArea = async (constructionType, coverageLevel) => {
-  const baseSpacing = CONSTRUCTION_REQUIREMENTS[constructionType].maxSpacing;
-  const spacingMultiplier = COVERAGE_SPACING[coverageLevel].multiplier;
-  const radius = baseSpacing * spacingMultiplier;
+// Calculate device coverage area based on detector type and coverage level
+const calculateDetectorCoverage = async (detectorType, coverageLevel) => {
+  const rules = COVERAGE_SPACING[coverageLevel][detectorType];
+  const radius = rules.wallDistance; // Use wall distance as radius for coverage calculation
   
   try {
-    // Validate calculation using WolframAlpha
-    const query = `area of circle with radius ${radius} meters`;
+    // Validate calculation using WolframAlpha with specific spacing rules
+    const query = `area of circle with radius ${feetToMeters(radius)} meters, considering that detectors are spaced ${feetToMeters(rules.spacing)} meters apart`;
     const result = await window.mcpTools.use_mcp_tool(WOLFRAM_SERVER, "get_simple_answer", {
       question: query
     });
@@ -65,7 +102,7 @@ const feetToMeters = (feet) => feet * 0.3048;
 // Convert square meters back to square feet
 const squareMetersToFeet = (squareMeters) => squareMeters * 10.764;
 
-// Calculate required detectors based on area and construction requirements
+// Calculate required detectors based on area and coverage rules
 export const calculateDetectors = async (formData) => {
   const {
     siteSize,
@@ -75,26 +112,40 @@ export const calculateDetectors = async (formData) => {
   } = formData;
 
   try {
-    // Convert spacing from feet to meters for WolframAlpha
-    const coverageArea = await calculateCoverageArea(constructionType, coverageLevel);
-    // Convert result back to square feet for our calculations
-    const coverageAreaFt = squareMetersToFeet(coverageArea);
+    // Calculate coverage areas for both detector types
+    const smokeCoverage = await calculateDetectorCoverage('smoke', coverageLevel);
+    const heatCoverage = await calculateDetectorCoverage('heat', coverageLevel);
+    
+    // Convert results back to square feet
+    const smokeCoverageFt = squareMetersToFeet(smokeCoverage);
+    const heatCoverageFt = squareMetersToFeet(heatCoverage);
+    
     const minDetectorsPerFloor = CONSTRUCTION_REQUIREMENTS[constructionType].minDetectorsPerFloor;
   
   // Calculate total detectors needed based on area
-    const detectorsPerFloor = Math.max(
+    // Calculate detectors needed based on coverage areas
+    const totalArea = siteSize / floors;
+    const smokeDetectorsPerFloor = Math.ceil(totalArea / smokeCoverageFt);
+    const heatDetectorsPerFloor = Math.ceil(totalArea / heatCoverageFt);
+    
+    // Ensure minimum requirements are met
+    const totalDetectorsPerFloor = Math.max(
       minDetectorsPerFloor,
-      Math.ceil(siteSize / (floors * coverageAreaFt))
+      smokeDetectorsPerFloor + heatDetectorsPerFloor
     );
     
-    const totalDetectors = detectorsPerFloor * floors;
+    const totalDetectors = totalDetectorsPerFloor * floors;
     
-    // Split between smoke and heat detectors based on coverage level
+    // Split between smoke and heat detectors based on coverage level ratios
     const { smokeRatio, heatRatio } = COVERAGE_SPACING[coverageLevel];
     
     return {
       smoke: Math.ceil(totalDetectors * smokeRatio),
-      heat: Math.ceil(totalDetectors * heatRatio)
+      heat: Math.ceil(totalDetectors * heatRatio),
+      spacing: {
+        smoke: COVERAGE_SPACING[coverageLevel].smoke,
+        heat: COVERAGE_SPACING[coverageLevel].heat
+      }
     };
   } catch (error) {
     console.error('Failed to calculate detectors:', error);
@@ -180,7 +231,11 @@ export const getCalculationExplanation = async (formData) => {
     const siteSizeMeters = formData.siteSize * 0.092903; // Convert sq ft to sq m
     const spacingMeters = feetToMeters(CONSTRUCTION_REQUIREMENTS[formData.constructionType].maxSpacing);
     
-    const query = `In a ${formData.constructionType} building with ${formData.floors} floors and ${siteSizeMeters.toFixed(2)} square meters per floor, explain the optimal spacing for fire detection devices considering that the base spacing is ${spacingMeters.toFixed(2)} meters with a coverage multiplier of ${COVERAGE_SPACING[formData.coverageLevel].multiplier}. Include considerations for smoke vs heat detector ratios.`;
+    const query = `In a ${formData.constructionType} building with ${formData.floors} floors and ${siteSizeMeters.toFixed(2)} square meters per floor:
+1. Analyze smoke detector placement with ${COVERAGE_SPACING[formData.coverageLevel].smoke.spacing} feet spacing and ${COVERAGE_SPACING[formData.coverageLevel].smoke.wallDistance} feet from walls
+2. Analyze heat detector placement with ${COVERAGE_SPACING[formData.coverageLevel].heat.spacing} feet spacing and ${COVERAGE_SPACING[formData.coverageLevel].heat.wallDistance} feet from walls
+3. Explain the coverage ratio of ${COVERAGE_SPACING[formData.coverageLevel].smokeRatio * 100}% smoke detectors to ${COVERAGE_SPACING[formData.coverageLevel].heatRatio * 100}% heat detectors
+4. Consider any special requirements for the ${formData.constructionType} building type`;
     
     const explanation = await window.mcpTools.use_mcp_tool(WOLFRAM_SERVER, "ask_llm", {
       question: query

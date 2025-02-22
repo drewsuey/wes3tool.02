@@ -191,12 +191,29 @@ function BudgetTool() {
             )}
           </div>
 
-          {data.coverageDetails?.technicalExplanation && (
+          {data.deviceCounts?.spacing && (
             <div className="technical-details">
-              <h3>Technical Analysis</h3>
-              <p className="technical-explanation">
-                {data.coverageDetails.technicalExplanation}
-              </p>
+              <h3>Device Spacing Details</h3>
+              <div className="spacing-info">
+                <h4>Smoke Detectors</h4>
+                <ul>
+                  <li>Spacing between detectors: <strong>{data.deviceCounts.spacing.smoke.spacing.toFixed(2)} feet</strong></li>
+                  <li>Distance from walls: <strong>{data.deviceCounts.spacing.smoke.wallDistance.toFixed(2)} feet</strong></li>
+                </ul>
+                <h4>Heat Detectors</h4>
+                <ul>
+                  <li>Spacing between detectors: <strong>{data.deviceCounts.spacing.heat.spacing.toFixed(2)} feet</strong></li>
+                  <li>Distance from walls: <strong>{data.deviceCounts.spacing.heat.wallDistance.toFixed(2)} feet</strong></li>
+                </ul>
+              </div>
+              {data.coverageDetails?.technicalExplanation && (
+                <>
+                  <h4>Technical Analysis</h4>
+                  <p className="technical-explanation">
+                    {data.coverageDetails.technicalExplanation}
+                  </p>
+                </>
+              )}
             </div>
           )}
 
@@ -241,15 +258,38 @@ function BudgetTool() {
         {`
           .technical-details {
             margin: 20px 0;
-            padding: 15px;
+            padding: 20px;
             background: #f5f5f5;
             border-radius: 8px;
+          }
+          .spacing-info {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          }
+          .spacing-info h4 {
+            color: #2c3e50;
+            margin: 10px 0;
+          }
+          .spacing-info ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0 20px;
+          }
+          .spacing-info li {
+            margin: 8px 0;
+            color: #34495e;
           }
           .technical-explanation {
             font-size: 14px;
             line-height: 1.6;
             color: #333;
             white-space: pre-wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
           }
         `}
       </style>
