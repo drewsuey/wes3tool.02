@@ -5,7 +5,7 @@ export const PATTERNS = {
   email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
   phone: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
   name: /^[a-zA-Z\s'-]{2,}$/,
-  companyName: /^[a-zA-Z0-9\s'-&,.]{2,}$/
+  companyName: /^[a-zA-Z0-9\s'&,.-]{2,}$/
 };
 
 // Validation messages
