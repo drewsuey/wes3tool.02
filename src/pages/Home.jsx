@@ -74,7 +74,7 @@ function Home() {
                 Start Your Estimate
                 <span className="button-arrow">→</span>
               </Link>
-              <a href="#learn-more" className="cta-button secondary">
+              <a href="https://ramtechglobal.com/wes-na/" target="_blank" rel="noopener noreferrer" className="cta-button secondary">
                 Learn More
               </a>
             </div>
