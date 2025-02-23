@@ -55,12 +55,8 @@ function Home() {
             {/* Features grid */}
             <div className="features-grid">
               <div className="feature-item">
-                <div className="feature-icon">📊</div>
-                <span>Accurate Calculations</span>
-              </div>
-              <div className="feature-item">
                 <div className="feature-icon">🏗️</div>
-                <span>Construction-Specific</span>
+                <span>Industry-Specific</span>
               </div>
               <div className="feature-item">
                 <div className="feature-icon">📱</div>
@@ -84,18 +80,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Trust indicators */}
-          <div className="trust-indicators">
-            <div className="certification-badge">
-              <span>✓ Industry Certified</span>
-            </div>
-            <div className="certification-badge">
-              <span>✓ Regulatory Compliant</span>
-            </div>
-            <div className="certification-badge">
-              <span>✓ Expert Validated</span>
-            </div>
-          </div>
         </div>
       </div>
 
