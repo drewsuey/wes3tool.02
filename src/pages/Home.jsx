@@ -5,15 +5,8 @@ import '../styles/Home.css';
 function Home() {
   return (
     <section className="hero-section">
-      {/* Background Image with Overlay */}
-      <div className="background-container">
-        <img
-          src="/orama.png"
-          alt="WES3 Devices"
-          className="background-image"
-        />
-        <div className="background-overlay" />
-      </div>
+      {/* Background Overlay */}
+      <div className="background-overlay" />
 
       {/* Content Container */}
       <div className="content-container">
