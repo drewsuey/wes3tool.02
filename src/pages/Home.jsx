@@ -17,9 +17,7 @@ function Home() {
 
         {/* Main Title */}
         <h1 className="main-title fade-up" style={{ animationDelay: '0.4s' }}>
-          Welcome to the WES3
-          <br />
-          <span className="title-accent">Budget Tool</span>
+          Welcome to the <span className="title-accent">WES3</span> Budget Tool
         </h1>
 
         {/* Subtitle */}
@@ -41,7 +39,7 @@ function Home() {
             rel="noopener noreferrer" 
             className="cta-button secondary"
           >
-            Learn More
+            Visit WES-NA
           </a>
         </div>
       </div>
