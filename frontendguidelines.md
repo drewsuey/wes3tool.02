@@ -3,7 +3,7 @@
 ## Brand Identity
 
 ### Logo Usage
-- Ramtech logo in top left of documents
+- Ramtech logo centered at top of landing page
 - Clear space around logo
 - Consistent size across applications
 - PNG format for transparency
@@ -11,152 +11,143 @@
 ### Color Palette
 
 #### Primary Colors
-- Ramtech Orange: `rgb(255, 69, 0)` / `#FF4500` (Headers, CTAs, accents)
-- Dark Gray: `rgb(51, 51, 51)` / `#333333` (Primary text)
-- White: `#FFFFFF` (Background)
+- Brand Orange: `#FF5722` / `rgb(255, 87, 34)` (CTAs, accents)
+- Brand Dark: `#CC4419` (Hover states)
+- Brand Light: `#FFE0D4` (Subtle highlights)
+- Black: `#000000` (Background)
 
-#### Secondary Colors
-- Light Gray: `rgb(245, 245, 245)` / `#F5F5F5` (Alternate rows)
-- Medium Gray: `rgb(80, 80, 80)` / `#505050` (Labels)
-- Border Gray: `rgb(220, 220, 220)` / `#DCDCDC` (Table borders)
+#### UI Colors
+- Text Primary: `#1e293b` (Main text)
+- Text Secondary: `#64748b` (Subtitles)
+- Background Light: `#f8fafc` (Light sections)
+- Glass Background: `rgba(255, 255, 255, 0.1)` (Overlays)
+- Glass Border: `rgba(255, 255, 255, 0.2)` (Transparent borders)
 
-#### Chart Colors
-- Smoke Detector: `#FF0000` (Red)
-- Heat Detector: `#9B59B6` (Purple)
-- Call Points: `#00B050` (Green)
-- Interface Units: `#000000` (Black)
+#### Overlay Colors
+- Dark Overlay: `rgba(0, 0, 0, 0.9)` (Background overlay)
+- Glass Effect: `rgba(255, 255, 255, 0.2)` (Floating elements)
 
 ### Typography
 
 #### Font Sizes
-- Page Title: `20px`
-- Section Headers: `14px`
-- Body Text: `10px`
-- Small Text: `8px`
+- Hero Title: `3.75rem` (60px)
+- Section Title: `2.25rem` (36px)
+- Subtitle: `1.5rem` (24px)
+- Body Text: `1rem` (16px)
+- Small Text: `0.875rem` (14px)
 
 #### Font Weights
-- Bold: 700 (Headers)
+- Extra Bold: 800 (Hero title)
+- Bold: 700 (Section headers)
+- Semi Bold: 600 (Buttons, important text)
 - Regular: 400 (Body text)
 
 ## Layout Components
 
-### PDF Document Structure
-1. Header Section
-   - Logo placement
-   - Website URL
-   - Document title
-   - Generation date
+### Landing Page
+1. Hero Section
+   - Full-screen height
+   - Centered content
+   - Dark background
+   - Animated elements
 
-2. Content Sections
-   - Part-based organization
-   - Consistent spacing
+2. Content Organization
+   - Floating badge
+   - Main title with accent
+   - Subtitle
+   - CTA buttons
+
+### Form Layout
+1. Multi-step Form
+   - Progress indicator
    - Clear section headers
-   - Table formatting
+   - Validation feedback
+   - Navigation buttons
 
-3. Footer Section
-   - Page numbers
-   - Brand logos
-   - Contact information
+2. Results Display
+   - Device quantities
+   - Cost breakdown
+   - Visual charts
+   - Export options
 
-### Tables
+## Animation System
 
-#### Standard Table
-- Plain theme for information display
-- Left-aligned text
-- Bold labels
-- Consistent cell padding
-- Gray text color
+### Transitions
+- Button Hover: `transform: scale(1.05)`
+- Content Fade: `opacity 0.5s ease-out`
+- Vertical Slide: `transform: translateY(20px)`
 
-#### Grid Table
-- Striped rows for readability
-- Orange header with white text
-- Centered column headers
-- Consistent cell padding
-- Bordered cells
-
-### Charts
-
-#### Doughnut Chart
-- Centered placement
-- Brand-consistent colors
-- Clear legend
-- Responsive sizing
-- Title in Ramtech orange
-
-## Spacing System
-
-### Margins
-- Document margin: `30px`
-- Content spacing: `20px`
-- Section spacing: `10px`
-- Footer spacing: `35px`
-
-### Content Width
-- Maximum content width: Page width minus 2x margin
-- Chart width: 70% of content width
-- Table width: Full content width
+### Animation Timing
+- Quick: `0.3s` (Button hovers)
+- Standard: `0.5s` (Content fades)
+- Delayed: Staggered delays (0.2s, 0.4s, 0.6s, 0.8s)
 
 ## Interactive Elements
 
+### Buttons
+1. Primary Button
+   - Brand orange background
+   - White text
+   - Scale on hover
+   - Rounded corners
+
+2. Secondary Button
+   - Transparent background
+   - White border
+   - White text
+   - Hover effect
+
 ### Form Fields
 - Clear labels
-- Validation feedback
+- Real-time validation
 - Error states
-- Required field indicators
-
-### Buttons
-- Clear purpose
-- Consistent styling
-- Hover states
-- Disabled states
+- Success indicators
 
 ## Accessibility
 
-### Text Contrast
-- Minimum contrast ratios
-- Clear hierarchy
-- Readable font sizes
-- Consistent text colors
-
-### Document Structure
-- Logical heading order
-- Clear section organization
+### Visual Hierarchy
+- Clear content structure
 - Consistent spacing
-- Proper markup
+- Proper contrast ratios
+- Focus indicators
+
+### Reduced Motion
+- Respects user preferences
+- Alternative transitions
+- Essential animations only
+- Smooth degradation
 
 ## Responsive Design
 
-### PDF Generation
-- Consistent rendering across devices
-- Proper page breaks
-- Maintained formatting
-- Scaled images
+### Breakpoints
+- Mobile: < 480px
+- Tablet: < 768px
+- Desktop: ≥ 768px
 
-### Chart Display
-- Responsive sizing
-- Clear legends
-- Maintained aspect ratios
-- Touch-friendly targets
+### Mobile Adaptations
+- Stacked buttons
+- Adjusted font sizes
+- Full-width elements
+- Simplified layouts
 
 ## Best Practices
 
-### Document Generation
-1. Consistent branding
-2. Clear organization
-3. Proper spacing
-4. Error handling
-5. Loading states
+### Performance
+1. Optimized animations
+2. Efficient transitions
+3. Lazy loading
+4. Responsive images
 
-### Data Presentation
-1. Clear hierarchy
-2. Logical grouping
-3. Visual balance
-4. Information density
+### Consistency
+1. Brand alignment
+2. Component reuse
+3. Spacing patterns
+4. Color application
 
-### Validation
-1. Input validation
-2. Error messaging
-3. Success states
-4. Loading indicators
+### User Experience
+1. Clear feedback
+2. Intuitive navigation
+3. Error prevention
+4. Loading states
 
-This document serves as the definitive guide for maintaining consistent design and branding across the WES3 Budget Tool's user interface and generated documents.
+This document serves as the definitive guide for maintaining consistent design and branding across the WES3 Budget Tool's user interface.
