@@ -7,9 +7,9 @@
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --background-light: #f8fafc;
-  --glass-background: rgba(249, 115, 22, 0.15);
-  --glass-border: rgba(249, 115, 22, 0.2);
-  --glass-shadow: rgba(249, 115, 22, 0.1);
+  --glass-background: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
   --transition-speed: 0.3s;
 }
 
@@ -139,7 +139,7 @@
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
   transition: transform var(--transition-speed);
 }
 
